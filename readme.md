@@ -17,7 +17,7 @@ Install the plugin in the standard way:
 
     server.pack.register([
         {
-            plugin: require('plugin-tsl-whatami'),
+            plugin: require('hapi-ending'),
             whatamiConfig
         }
     ], function pluginsRegistered(err) {
