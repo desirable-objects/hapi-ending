@@ -1,0 +1,24 @@
+{
+  "name": "plugin-tsl-whatami",
+  "version": "0.2",
+  "description": "Tells you what I am",
+  "main": "plugin.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/desirable-objects/hapi-ending"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {
+    "handlebars": "^2.0.0",
+    "lodash-node": "^2.4.1",
+    "sf": "^0.1.7"
+  },
+  "devDependencies": {
+    "jshint": "^2.5.5",
+  }
+}
