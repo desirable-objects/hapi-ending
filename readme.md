@@ -28,27 +28,27 @@ Install the plugin in the standard way:
 
 You can add a description to routes using the parameters 'description', 'tags', and 'notes' as follows:
 
-{
-    method: 'GET',
-    path: '/you/{foo}/name/{baz}',
-    config: {
-        description: "Describe your endpoint here",
-        tags: ['foo', 'authenticated', 'any tag']
-        validate: {
-            params: {
-                foo: Joi.number().describe('It should more than likely be a number'),
-                baz: Joi.string().describe('Some string thing goes here')
-            }
+    {
+        method: 'GET',
+        path: '/you/{foo}/name/{baz}',
+        config: {
+            description: "Describe your endpoint here",
+            tags: ['foo', 'authenticated', 'any tag']
+            validate: {
+                params: {
+                    foo: Joi.number().describe('It should more than likely be a number'),
+                    baz: Joi.string().describe('Some string thing goes here')
+                }
+            },
+            notes: [
+                'This is just a note',
+                "?foo This describes the 'foo' parameter and possible usages",
+                "?bar This describes the 'bar' parameter",
+            ]
         },
-        notes: [
-            'This is just a note',
-            "?foo This describes the 'foo' parameter and possible usages",
-            "?bar This describes the 'bar' parameter",
-        ]
-    },
-    handler: function(request, reply) {
-        ...
-    }
-};
+        handler: function(request, reply) {
+            ...
+        }
+    };
 
 Query string definitions should be placed as notes array entries, and start with ?<parameterName> since HAPI doesn't allow specification of them otherwise.
