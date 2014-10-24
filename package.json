@@ -1,6 +1,6 @@
 {
   "name": "plugin-tsl-whatami",
-  "version": "0.2",
+  "version": "0.2.0",
   "description": "Tells you what I am",
   "main": "plugin.js",
   "repository": {
@@ -19,6 +19,6 @@
     "sf": "^0.1.7"
   },
   "devDependencies": {
-    "jshint": "^2.5.5",
+    "jshint": "^2.5.5"
   }
 }
