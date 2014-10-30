@@ -8,6 +8,8 @@ Lists routes, parameters, and validation constraints for HAPI.
 
 ## Configuration
 
+    Currently you can configure the baseUrl which is useful if you want to copy and paste urls, and whether the plugin is enabled or not. Disabling the plugin is highly advised for production environments.
+
     var whatamiConfig = {
         baseUrl: 'http://your.domain:1234' // defaults to protocol-less server host+port,
         enabled: true // defaults to false
