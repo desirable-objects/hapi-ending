@@ -1,4 +1,4 @@
-### WhatAmI plugin
+### Hapi Ending
 
 Lists routes, parameters, and validation constraints for HAPI.
 
