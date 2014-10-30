@@ -2,6 +2,10 @@
 
 Lists routes, parameters, and validation constraints for HAPI.
 
+## Plugin status
+
+[![Build Status](https://travis-ci.org/desirable-objects/hapi-ending.svg)](https://travis-ci.org/desirable-objects/hapi-ending)
+
 ## Configuration
 
     var whatamiConfig = {
