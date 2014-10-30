@@ -1,8 +1,9 @@
 {
   "name": "hapi-ending",
   "version": "0.2.1",
-  "description": "Tells you what I am",
+  "description": "Creates documentation of the endpoints of an application",
   "main": "plugin.js",
+  "test": "./node_modules/lab/bin/lab -c",
   "repository": {
     "type": "git",
     "url": "https://github.com/desirable-objects/hapi-ending"
@@ -14,11 +15,16 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
+    "code": "^1.2.0",
     "handlebars": "^2.0.0",
+    "hapi": "^7.1.1",
+    "joi": "^4.7.0",
     "lodash-node": "^2.4.1",
     "sf": "^0.1.7"
   },
   "devDependencies": {
-    "jshint": "^2.5.5"
+    "cheerio": "^0.17.0",
+    "jshint": "^2.5.5",
+    "lab": "^5.0.1"
   }
 }

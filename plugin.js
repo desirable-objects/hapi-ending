@@ -21,34 +21,36 @@ exports.register = function (plugin, options, next) {
 
     plugin.views(views);
 
+    function calculateRoutingTable(request, reply) {
+        var routes = request.server.table();
+        var categorised = _.groupBy(routes, function(route) { return route.settings.method; });
+
+        _.each(routes, function(route) {
+            route.settings.fullQuery = route.settings.path;
+
+            if (route.settings.validate.query) {
+                var query = _.map(route.settings.validate.query._inner.children, function(child) {
+                    return sf('{key}=<{schema._type}>', child);
+                });
+                route.settings.fullQuery += sf('?{queryString}', { queryString: query.join('&') });
+            }
+        });
+
+        reply({categorised: categorised, routes: routes});
+    }
+
     plugin.route({
         method: 'GET',
         path: options.path || '/',
         config: {
-            description: "Describes endpoint",
-            tags: ['metadata']
+            pre: [
+                { assign: 'model', method: calculateRoutingTable }
+            ],
+            description: "Describes endpoints in your application",
+            tags: ['metadata', 'private', 'api']
         },
         handler: function(request, reply) {
-
-            var routes = request.server.routingTable ? request.server.routingTable() : request.server.table();
-            var categorised = _.groupBy(routes, function(route) { return route.settings.method; });
-
-            _.each(routes, function(route) {
-                route.settings.fullQuery = route.settings.path;
-
-                if (route.settings.validate.query) {
-                    var query = _.map(route.settings.validate.query._inner.children, function(child) {
-                        return sf('{key}=<{schema._type}>', child);
-                    });
-                    route.settings.fullQuery += sf('?{queryString}', { queryString: query.join('&') });
-                }
-            });
-
-            return reply.view('root', {
-                categorised: categorised,
-                routes: routes,
-                baseUrl: options.baseUrl || sf('//{_host}:{_port}', routes[0].server)
-            });
+            return reply.view('root', request.pre.model);
         }
     });
 

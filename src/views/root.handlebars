@@ -112,7 +112,7 @@
                 <ul>
                     <li class="header">{{@key}}</li>
                     {{#each this}}
-                    <li>
+                    <li class="route-link">
                         <a href="#endpoint-{{method}};{{path}}">{{path}}</a>
                     </li>
                     {{/each}}
@@ -127,7 +127,7 @@
             <div class="route">
                 <a name="endpoint-{{settings.method}};{{settings.path}}"></a>
                 <h1 class="endpoint">{{settings.method}} {{settings.fullQuery}}</h1>
-                <p class="description">{{settings.description}}</p>
+                <p class="endpoint-description">{{settings.description}}</p>
                 <ul class="tags">
                     {{#each settings.tags}}
                     <li class="tag">{{this}}</li>
@@ -136,7 +136,7 @@
                 {{#if settings.validate.params}}
                 <div class="validator-list parameters">
                     <h1>URI Components</h1>
-                    <table class="pure-table">
+                    <table class="pure-table uri-table">
                         <thead>
                             <tr>
                                 <td>Parameter</td>
@@ -159,7 +159,7 @@
                 {{#if settings.validate.query}}
                 <div class="validator-list parameters">
                     <h1>Query String</h1>
-                    <table class="pure-table">
+                    <table class="pure-table query-table">
                         <thead>
                             <tr>
                                 <td>Key</td>
@@ -170,9 +170,9 @@
                         <tbody>
                             {{#each settings.validate.query._inner.children}}
                             <tr>
-                                <td>{{key}}</td>
-                                <td>{{schema._type}}</td>
-                                <td>{{schema._description}}</td>
+                                <td class="key">{{key}}</td>
+                                <td class="type">{{schema._type}}</td>
+                                <td class="description">{{schema._description}}</td>
                             </tr>
                             {{/each}}
                         </tbody>
@@ -182,7 +182,7 @@
                 {{#if settings.validate.payload}}
                 <div class="validator-list payload">
                     <h1>JSON Payload</h1>
-                    <table class="pure-table">
+                    <table class="pure-table json-table">
                         <thead>
                             <tr>
                                 <td>Attribute</td>
