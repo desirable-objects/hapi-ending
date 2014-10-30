@@ -3,7 +3,10 @@
   "version": "0.2.1",
   "description": "Creates documentation of the endpoints of an application",
   "main": "plugin.js",
-  "test": "./node_modules/lab/bin/lab -c",
+  "scripts": {
+    "test": "./node_modules/lab/bin/lab -l",
+    "coverage": "./node_modules/lab/bin/lab -lr lcov"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/desirable-objects/hapi-ending"
@@ -16,6 +19,7 @@
   },
   "dependencies": {
     "code": "^1.2.0",
+    "coveralls": "^2.11.2",
     "handlebars": "^2.0.0",
     "hapi": "^7.1.1",
     "joi": "^4.7.0",

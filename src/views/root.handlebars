@@ -182,7 +182,7 @@
                 {{#if settings.validate.payload}}
                 <div class="validator-list payload">
                     <h1>JSON Payload</h1>
-                    <table class="pure-table json-table">
+                    <table class="pure-table payload-table">
                         <thead>
                             <tr>
                                 <td>Attribute</td>
@@ -193,9 +193,9 @@
                         <tbody>
                             {{#each settings.validate.payload._inner.children}}
                             <tr>
-                                <td>{{key}}</td>
-                                <td>{{schema._type}}</td>
-                                <td>{{schema._description}}</td>
+                                <td class="key">{{key}}</td>
+                                <td class="type">{{schema._type}}</td>
+                                <td class="description">{{schema._description}}</td>
                             </tr>
                             {{/each}}
                         </tbody>

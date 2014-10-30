@@ -4,7 +4,7 @@ var Lab = require("lab"),
     lab = exports.lab = Lab.script();
 
 var Hapi = require('hapi'),
-    server = require("../plugin.js");
+    server = require("../plugin");
 
 var expect = Code.expect;
 
@@ -20,14 +20,15 @@ lab.experiment("Hapi Ending", function() {
 
     function documentation(html, id) {
 
-        var parent = html('.route').find('a[name="'+id+'"]').parent();
+        var parent = html('.route').find('a[name="'+id+'"]').parent('.route');
 
         return {
             linkText: html('a[href="#'+id+'"]').text(),
             title: parent.find('.endpoint').text(),
             tags: parent.find('.tag').map(function() { return html(this).text() }).get(),
             description: parent.find('.endpoint-description').text(),
-            query: table(html, parent, 'query-table')
+            query: table(html, parent, 'query-table'),
+            payload: table(html, parent, 'payload-table'),
         }
     };
 
@@ -59,11 +60,26 @@ lab.experiment("Hapi Ending", function() {
         };
 
         server.pack.register({
-            plugin: require('../plugin.js'),
+            plugin: require('../plugin'),
             options: serverOptions
         }, function() {
             done();
         });
+    });
+
+    lab.test("list endpoints", function(done) {
+
+        server.inject(defaultRoute, function(response) {
+
+            var html = cheerio.load(response.result);
+
+            expect(response.statusCode).to.equal(200);
+            expect(html('.route').length).to.equal(3);
+            expect(html('.route-link').length).to.equal(3);
+
+            done();
+        });
+
     });
 
     lab.test("get endpoints", function(done) {
@@ -71,10 +87,6 @@ lab.experiment("Hapi Ending", function() {
         server.inject(defaultRoute, function(response) {
 
             var html = cheerio.load(response.result);
-
-            expect(response.statusCode).to.equal(200);
-            expect(html('.route').length).to.equal(2);
-            expect(html('.route-link').length).to.equal(2);
 
             var docs = documentation(html, 'endpoint-get;/checkout');
 
@@ -93,5 +105,30 @@ lab.experiment("Hapi Ending", function() {
         });
 
     });
+
+    lab.test("payload validation", function(done) {
+
+        server.inject(defaultRoute, function(response) {
+
+            var html = cheerio.load(response.result);
+
+            var docs = documentation(html, 'endpoint-post;/choices/enders-game');
+
+            expect(docs.description).to.equal("Don't put all your eggs in one basket");
+
+            expect(docs.query.rows.length).to.equal(0);
+
+            expect(docs.payload.rows[0].key).to.equal('eggs');
+            expect(docs.payload.rows[0].type).to.equal('number');
+            expect(docs.payload.rows[0].description).to.equal('Eggs to go into the basket');
+
+            expect(docs.payload.rows[1].key).to.equal('basket');
+            expect(docs.payload.rows[1].type).to.equal('string');
+            expect(docs.payload.rows[1].description).to.equal('Basket type');
+
+            done();
+        });
+
+    })
 
 });
