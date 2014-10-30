@@ -2,8 +2,6 @@
 
 Lists routes, parameters, and validation constraints for HAPI.
 
-Currently in a PROTOTYPE stage - hence the lack of tests, but good for development.
-
 ## Configuration
 
     var whatamiConfig = {
