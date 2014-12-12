@@ -53,14 +53,19 @@ lab.experiment("Hapi Ending", function() {
     lab.before(function(done) {
 
         server = new Hapi.Server();
+        server.connection({
+            host: 'localhost',
+            port: 3000
+        });
+
         server.route(require('./routes/example'));
 
         var serverOptions = {
             enabled: true
         };
 
-        server.pack.register({
-            plugin: require('../plugin'),
+        server.register({
+            register: require('../plugin'),
             options: serverOptions
         }, function() {
             done();

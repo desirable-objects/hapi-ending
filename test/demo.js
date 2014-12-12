@@ -1,12 +1,15 @@
 var Hapi = require("hapi");
-var server = new Hapi.Server(3000, "localhost");
+var server = new Hapi.Server();
 
-server.pack.register({
-    plugin: require('../plugin'),
-    options: {
-        enabled: true
-    }
-    }, function(err) {
+server.connection({
+    host: 'localhost',
+    port: 3000
+});
+
+server.register({
+  register: require('../plugin'),
+  options: { enabled: true }
+  }, function(err) {
         if (err) { console.log(err); }
 
         server.route(require('./routes/example.js'));

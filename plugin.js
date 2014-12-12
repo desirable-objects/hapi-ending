@@ -22,21 +22,22 @@ exports.register = function (plugin, options, next) {
     plugin.views(views);
 
     function calculateRoutingTable(request, reply) {
-        var routes = request.server.table();
-        var categorised = _.groupBy(routes, function(route) { return route.settings.method; });
+        var routes = _.pluck(request.server.table()[0].table, 'public');
+        var categorised = _.groupBy(routes, function(route) { return route.method; });
 
-        _.each(routes, function(route) {
-            route.settings.fullQuery = route.settings.path;
+        _.each(routes, function(route, i) {
+            route.fullQuery = route.path;
 
             if (route.settings.validate.query) {
+
                 var query = _.map(route.settings.validate.query._inner.children, function(child) {
                     return sf('{key}=<{schema._type}>', child);
                 });
-                route.settings.fullQuery += sf('?{queryString}', { queryString: query.join('&') });
+                route.fullQuery += sf('?{queryString}', { queryString: query.join('&') });
             }
         });
 
-        reply({categorised: categorised, routes: routes});
+        reply({categorised: categorised, routes: routes, baseUrl: options.baseUrl});
     }
 
     plugin.route({

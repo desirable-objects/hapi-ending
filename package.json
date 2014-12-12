@@ -1,6 +1,6 @@
 {
   "name": "hapi-ending",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Creates documentation of the endpoints of an application",
   "main": "plugin.js",
   "scripts": {
@@ -18,17 +18,17 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "code": "^1.2.0",
+    "code": "^1.2.1",
     "coveralls": "^2.11.2",
     "handlebars": "^2.0.0",
-    "hapi": "^7.1.1",
-    "joi": "^4.7.0",
+    "hapi": "^8.0.0",
+    "joi": "^5.0.2",
     "lodash-node": "^2.4.1",
     "sf": "^0.1.7"
   },
   "devDependencies": {
-    "cheerio": "^0.17.0",
-    "jshint": "^2.5.5",
-    "lab": "^5.0.1"
+    "cheerio": "^0.18.0",
+    "jshint": "^2.5.10",
+    "lab": "^5.1.0"
   }
 }
