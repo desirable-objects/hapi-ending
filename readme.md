@@ -1,6 +1,6 @@
 ### Hapi Ending
 
-Lists routes, parameters, and validation constraints for HAPI.
+Lists routes, parameters, and validation constraints for HAPI version 8.
 
 ## Plugin status
 
