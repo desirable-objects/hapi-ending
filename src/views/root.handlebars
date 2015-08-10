@@ -48,17 +48,17 @@
         <div class="dark-box"></div>
         <div class="content">
           {{#each routes}}
-            <h1 id='{{fullQuery}}'>{{fullQuery}}</h1>
-            <h2 id='{{path}}'>{{path}}</h2>
+            <h1 id='{{path}}'>{{path}}</h1>
+            <h2 id='{{fullQuery}}'>{{fullQuery}}</h2>
 
             <pre style="display: block;">
               <code class="highlight shell">curl
                 <span class="s2">
-                  {{path}}?{{#each settings.validate.query._inner.children}}{{key}}={{schema._type}}&amp;{{/each}}
+                  {{fullQuery}}
                 </span>
                 {{#if settings.validate.payload}}
                   -H <span class="s2">"Content-Type: application/json"</span>
-                  -d <span class="s2">"{{#each settings.validate.payload._inner.children}}{{key}}={{schema._type}}&amp;{{/each}}</span>"
+                  -d <span class="s2">"{{jsonPayload}}"</span>
                 {{/if}}
               </code>
             </pre>
@@ -69,7 +69,7 @@
 
                 var options = {
                   method: '<span class="s2">{{method}}</span>',
-                  path: <span class="s2">{{path}}</span>?{{#each settings.validate.query._inner.children}}<span class="s2">{{key}}</span>=<span class="s2">{{schema._type}}</span>&amp;{{/each}}
+                  path: '<span class="s2">{{fullQuery}}</span>'
                 };
 
                 http.request(options, function(response) {
@@ -86,9 +86,10 @@
               </code>
             </pre>
 
+            <p>{{settings.description}}</p>
+
             <h3>HTTP REQUEST</h3>
             <p><code prettyprint="true">{{method}} {{path}}</code></p>
-            <p>{{method}} {{settings.description}}</p>
             <ul class="tags">
                 {{#each settings.tags}}
                 <li class="tag">{{this}}</li>

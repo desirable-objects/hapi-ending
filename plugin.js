@@ -16,7 +16,8 @@ exports.register = function (plugin, options, next) {
         engines: {
             handlebars: require('handlebars')
         },
-        path: './src/views'
+        path: './src/views',
+        helpersPath: './src/helpers'
     };
 
     plugin.views(views);
@@ -35,6 +36,23 @@ exports.register = function (plugin, options, next) {
                 });
                 route.fullQuery += sf('?{queryString}', { queryString: query.join('&') });
             }
+
+            if (route.settings.validate.payload) {
+
+              var examples = {
+                string: 'qux',
+                number: 123,
+                array: ['foo', 'bar', 'baz'],
+                object: {foo: 'bar'}
+              }
+
+              var data = _.map(route.settings.validate.payload._inner.children, function(child) {
+                  return sf('{key}={example}', {key: child.key, example: examples[child.schema._type]});
+              });
+              route.jsonPayload = data.join('&');
+
+            }
+
         });
 
         reply({categorised: categorised, routes: routes, baseUrl: options.baseUrl});
