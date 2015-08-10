@@ -42,6 +42,16 @@ exports.register = function (plugin, options, next) {
 
     plugin.route({
         method: 'GET',
+        path: '/assets/{param*}',
+        handler: {
+            directory: {
+                path: 'src/public'
+            }
+        }
+    });
+
+    plugin.route({
+        method: 'GET',
         path: options.path || '/',
         config: {
             pre: [
