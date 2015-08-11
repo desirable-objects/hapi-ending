@@ -1,12 +1,3 @@
 language: node_js
 node_js:
-  - 0.10
-deploy:
-  provider: appfog
-  email: aj@desirableobjects.co.uk
-  password:
-    secure: vPquF1BsLp020Qj4WvVe0ZBHDOE2IKEgarXO6RDPvDYsfGPaRi+kfWa4/1JkDweg9ChijNCiNKgmOX99wCw65v874x/bmRReX0i3ByaRYDbpsKqD8kzxBK3dP+AqYqMup8D4wBFktwjAh5ETD1h2RFoUL+y8kotpWgESUBAeQOE=
-  app: hapi-ending-demo
-  on:
-    repo: desirable-objects/hapi-ending
-  run: 'node test/demo.js'
+  - 0.12
