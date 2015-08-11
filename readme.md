@@ -6,6 +6,10 @@ Lists routes, parameters, and validation constraints for HAPI version 8.
 
 [![Build Status](https://travis-ci.org/desirable-objects/hapi-ending.svg)](https://travis-ci.org/desirable-objects/hapi-ending)
 
+## What it looks like
+
+<img src="https://raw.githubusercontent.com/desirable-objects/hapi-ending/master/screenshot.png" style="width: 90%" alt="Hapi Ending" title="Hapi Ending" />
+
 ## Configuration
 
     Currently you can configure the baseUrl which is useful if you want to copy and paste urls, and whether the plugin is enabled or not. Disabling the plugin is highly advised for production environments.
