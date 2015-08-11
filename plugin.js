@@ -24,13 +24,14 @@ exports.register = function (plugin, options, next) {
 
     function calculateRoutingTable(request, reply) {
         var routes = _.pluck(request.server.table()[0].table, 'public');
-        var categorised = _.groupBy(routes, function(route) { return route.method; });
 
-        _.each(routes, function(route, i) {
+        var publicRoutes = _.reject(routes, function(route) {
+          return route.settings.tags.indexOf('private') > -1;
+        });
 
-            if (route.settings.tags && route.settings.tags.contains['private']) {
-              return;
-            }
+        var categorised = _.groupBy(publicRoutes, function(route) { return route.method; });
+
+        _.each(publicRoutes, function(route, i) {
 
             route.fullQuery = route.path;
 
@@ -62,7 +63,7 @@ exports.register = function (plugin, options, next) {
 
         reply({
           categorised: categorised,
-          routes: routes,
+          routes: publicRoutes,
           baseUrl: options.baseUrl,
           logoUrl: options.logoUrl || '/assets/img/hapi-logo.svg',
           documentationUrl: options.path || ''

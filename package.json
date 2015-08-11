@@ -2,7 +2,16 @@
   "name": "hapi-ending",
   "version": "0.5.3",
   "description": "Creates documentation of the endpoints of an application",
-  "keywords": ["hapi", "endpoints", "api", "rest", "documentation", "docs", "slate", "swagger"],
+  "keywords": [
+    "hapi",
+    "endpoints",
+    "api",
+    "rest",
+    "documentation",
+    "docs",
+    "slate",
+    "swagger"
+  ],
   "main": "plugin.js",
   "scripts": {
     "test": "./node_modules/lab/bin/lab -l",
@@ -25,7 +34,8 @@
     "hapi": "^8.0.0",
     "joi": "^5.0.2",
     "lodash-node": "^2.4.1",
-    "sf": "^0.1.7"
+    "sf": "^0.1.7",
+    "shortid": "^2.2.2"
   },
   "devDependencies": {
     "cheerio": "^0.18.0",
