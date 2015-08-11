@@ -85,7 +85,7 @@
               </code>
             </pre>
 
-            <p>{{settings.description}}</p>
+            <p class="endpoint-description">{{settings.description}}</p>
 
             <h3>HTTP REQUEST</h3>
             <p class="url-mapping"><code prettyprint="true"><span class="method">{{method}}</span> {{path}}</code></p>
@@ -99,7 +99,7 @@
 
             {{#if settings.validate.params}}
             <h3>URI Components</h3>
-            <table>
+            <table class="params-table">
                 <thead>
                     <tr>
                         <td>Parameter</td>
@@ -120,7 +120,7 @@
             {{/if}}
             {{#if settings.validate.query}}
             <h3>Query String</h3>
-            <table>
+            <table  class="query-table">
                 <thead>
                     <tr>
                         <td>Key</td>
@@ -141,7 +141,7 @@
             {{/if}}
             {{#if settings.validate.payload}}
             <h3>JSON Payload</h3>
-            <table>
+            <table  class="payload-table">
                 <thead>
                     <tr>
                         <td>Attribute</td>

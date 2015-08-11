@@ -26,23 +26,23 @@ lab.experiment("Hapi Ending", function() {
 
         return {
             title: parent.text(),
-            tags: parent.next('.tags .tag').map(function() { return html(this).text() }).get(),
-            urlMapping: parent.next('p.url-mapping').text()
-            // description: parent.find('.endpoint-description').text(),
-            // query: table(html, parent, 'query-table'),
-            // payload: table(html, parent, 'payload-table'),
+            tags: parent.nextUntil('h1', '.tags').find('.tag').map(function() { return html(this).text() }).get(),
+            urlMapping: parent.nextUntil('h1', '.url-mapping').text(),
+            description: parent.nextUntil('h1', '.endpoint-description').text(),
+            query: table(html, parent.nextUntil('h1', '.query-table')),
+            payload: table(html, parent.nextUntil('h1', '.payload-table')),
         }
     };
 
-    function table(html, parent, kind) {
+    function table(html, parent) {
 
         var rows = [];
-        var row = parent.find('.'+kind).find('tbody tr').each(
+        var row = parent.find('tbody tr').each(
             function(i, el) {
                 rows.push({
-                    key: html(this).find('.key').text(),
-                    type: html(this).find('.type').text(),
-                    description: html(this).find('.description').text()
+                    key: html(this).find('td').slice(0,1).text(),
+                    type: html(this).find('td').slice(1,2).text(),
+                    description: html(this).find('td').slice(2,3).text()
                 });
             }
         );
@@ -105,43 +105,38 @@ lab.experiment("Hapi Ending", function() {
         var docs = documentation(html, '/checkout');
 
         expect(docs.title).to.equal('/checkout')
-      //  expect(docs.urlMapping).to.equal('get /checkout?items=<number>');
-        // expect(docs.tags[0]).to.equal('one');
-        // expect(docs.tags[1]).to.equal('two');
-        // expect(docs.tags[2]).to.equal('three');
-        // expect(docs.description).to.equal('Tests a checkout with items');
-        //
-        // expect(docs.query.rows[0].key).to.equal('items');
-        // expect(docs.query.rows[0].type).to.equal('number');
-        // expect(docs.query.rows[0].description).to.equal('Number of items in the cart');
+        expect(docs.urlMapping).to.equal('get /checkout');
+        expect(docs.tags[0]).to.equal('one');
+        expect(docs.tags[1]).to.equal('two');
+        expect(docs.tags[2]).to.equal('three');
+        expect(docs.description).to.equal('Tests a checkout with items');
+
+        expect(docs.query.rows[0].key).to.equal('items');
+        expect(docs.query.rows[0].type).to.equal('number');
+        expect(docs.query.rows[0].description).to.equal('Number of items in the cart');
 
         done();
 
     });
-    //
-    // lab.test("payload validation", function(done) {
-    //
-    //     server.inject(defaultRoute, function(response) {
-    //
-    //         var html = cheerio.load(response.result);
-    //
-    //         var docs = documentation(html, 'endpoint-post;/choices/enders-game');
-    //
-    //         expect(docs.description).to.equal("Don't put all your eggs in one basket");
-    //
-    //         expect(docs.query.rows.length).to.equal(0);
-    //
-    //         expect(docs.payload.rows[0].key).to.equal('eggs');
-    //         expect(docs.payload.rows[0].type).to.equal('number');
-    //         expect(docs.payload.rows[0].description).to.equal('Eggs to go into the basket');
-    //
-    //         expect(docs.payload.rows[1].key).to.equal('basket');
-    //         expect(docs.payload.rows[1].type).to.equal('string');
-    //         expect(docs.payload.rows[1].description).to.equal('Basket type');
-    //
-    //         done();
-    //     });
-    //
-    // })
+
+    lab.test("payload validation", function(done) {
+
+        var docs = documentation(html, '/choices/enders-game');
+
+        expect(docs.description).to.equal("Don't put all your eggs in one basket");
+
+        expect(docs.query.rows.length).to.equal(0);
+
+        expect(docs.payload.rows[0].key).to.equal('eggs');
+        expect(docs.payload.rows[0].type).to.equal('number');
+        expect(docs.payload.rows[0].description).to.equal('Eggs to go into the basket');
+
+        expect(docs.payload.rows[1].key).to.equal('basket');
+        expect(docs.payload.rows[1].type).to.equal('string');
+        expect(docs.payload.rows[1].description).to.equal('Basket type');
+
+        done();
+
+    })
 
 });
