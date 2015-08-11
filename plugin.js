@@ -63,7 +63,7 @@ exports.register = function (plugin, options, next) {
         path: '/assets/{param*}',
         handler: {
             directory: {
-                path: Path.resolve('../src/public'),
+                path: './src/public',
                 listing: true
             }
         }
