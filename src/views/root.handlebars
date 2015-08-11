@@ -26,7 +26,7 @@
       </span>
     </a>
     <div class="tocify-wrapper">
-        <img src="images/logo.png" />
+        <img src="/assets/img/hapi-logo.svg" style="width: 80%; margin: 20px;" />
         <div class="lang-selector">
             <a href="#" data-language-name="shell">shell</a>
             <a href="#" data-language-name="javascript">javascript</a>
@@ -38,9 +38,7 @@
         <div id="toc">
         </div>
         <ul class="toc-footer">
-            <li><a href='#'>Sign Up for a Developer Key</a>
-            </li>
-            <li><a href='http://github.com/tripit/slate'>Documentation Powered by Slate</a>
+            <li><a href='http://github.com/tripit/slate'>Documentation based on Slate</a>
             </li>
         </ul>
     </div>
@@ -73,14 +71,14 @@
                 };
 
                 http.request(options, function(response) {
-                  var str = '';
+                  var body = '';
 
                   response.on('data', function (chunk) {
-                    str += chunk;
+                    body += chunk;
                   });
 
                   response.on('end', function () {
-                    console.log(str);
+                    console.log(body);
                   });
                 }).end();
               </code>
