@@ -27,6 +27,11 @@ exports.register = function (plugin, options, next) {
         var categorised = _.groupBy(routes, function(route) { return route.method; });
 
         _.each(routes, function(route, i) {
+
+            if (route.settings.tags && route.settings.tags.contains['private']) {
+              return;
+            }
+
             route.fullQuery = route.path;
 
             if (route.settings.validate.query) {

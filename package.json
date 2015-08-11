@@ -1,7 +1,8 @@
 {
   "name": "hapi-ending",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Creates documentation of the endpoints of an application",
+  "keywords": ["hapi", "endpoints", "api", "rest", "documentation", "docs", "slate", "swagger"],
   "main": "plugin.js",
   "scripts": {
     "test": "./node_modules/lab/bin/lab -l",

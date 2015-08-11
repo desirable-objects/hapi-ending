@@ -36,6 +36,7 @@ Install the plugin in the standard way:
 
 You can add a description to routes using the parameters 'description', 'tags', and 'notes' as follows:
 
+```
     {
         method: 'GET',
         path: '/you/{foo}/name/{baz}',
@@ -60,3 +61,8 @@ You can add a description to routes using the parameters 'description', 'tags', 
             ...
         }
     };
+```
+
+### Private endpoints
+
+Adding 'private' to any endpoint's tags will make the endpoint private (i.e. unlisted by the plugin)
