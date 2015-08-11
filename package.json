@@ -15,7 +15,8 @@
   "main": "plugin.js",
   "scripts": {
     "test": "./node_modules/lab/bin/lab -l",
-    "coverage": "./node_modules/lab/bin/lab -lr lcov"
+    "coverage": "./node_modules/lab/bin/lab -lr lcov",
+    "demo": "node test/demo.js"
   },
   "repository": {
     "type": "git",

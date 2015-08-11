@@ -7,6 +7,10 @@
   background-color: #c6dde9;
   margin-left: 4px;
 }
+.valids {
+  margin: 0;
+  padding: 0;
+}
 .valid {
   display: inline;
   padding: 4px 7px;

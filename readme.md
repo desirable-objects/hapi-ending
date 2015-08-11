@@ -17,7 +17,9 @@ Lists routes, parameters, and validation constraints for HAPI version 8.
 
 ## Live Demo
 
-The following url is a demo of the 'test-app' It's nonsense, but it gives you an idea of the look and feel.
+To run a quick local demo, use the npm target 'demo':
+
+```npm run demo```
 
 ## Usage
 
