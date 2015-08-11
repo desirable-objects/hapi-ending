@@ -1,0 +1,13 @@
+.tags {
+  list-style-type: none;
+}
+.tag {
+  display: inline;
+  padding: 4px 7px;
+  background-color: #c6dde9;
+  margin-left: 4px;
+}
+.method {
+  text-transform: uppercase;
+  background-color: #c6dde9;
+}
