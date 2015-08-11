@@ -59,7 +59,9 @@ exports.register = function (plugin, options, next) {
           categorised: categorised,
           routes: routes,
           baseUrl: options.baseUrl,
-          logoUrl: options.logoUrl || '/assets/img/hapi-logo.svg'});
+          logoUrl: options.logoUrl || '/assets/img/hapi-logo.svg',
+          documentationUrl: options.path || '/'
+        });
     }
 
     plugin.route({
