@@ -65,8 +65,10 @@ exports.register = function (plugin, options, next) {
     plugin.route({
         method: 'GET',
         path: (options.path || '') + '/assets/{param*}',
-        description: "Asset delivery url for hapi-ending plugin",
-        tags: ['metadata', 'private', 'api', 'assets'],
+        config: {
+          description: "Asset delivery url for hapi-ending plugin",
+          tags: ['metadata', 'private', 'api', 'assets']
+        },
         handler: {
             directory: {
                 path: './src/public',
