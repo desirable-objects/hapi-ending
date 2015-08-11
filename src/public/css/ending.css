@@ -1,10 +1,16 @@
-.tags {
+.tags, .valids {
   list-style-type: none;
 }
 .tag {
   display: inline;
   padding: 4px 7px;
   background-color: #c6dde9;
+  margin-left: 4px;
+}
+.valid {
+  display: inline;
+  padding: 4px 7px;
+  background-color: #6ac174;
   margin-left: 4px;
 }
 .method {

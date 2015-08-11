@@ -26,7 +26,7 @@ exports.register = function (plugin, options, next) {
         var routes = _.pluck(request.server.table()[0].table, 'public');
 
         var publicRoutes = _.reject(routes, function(route) {
-          return route.settings.tags.indexOf('private') > -1;
+          return route.settings.tags ? (route.settings.tags.indexOf('private') > -1) : false;
         });
 
         var categorised = _.groupBy(publicRoutes, function(route) { return route.method; });

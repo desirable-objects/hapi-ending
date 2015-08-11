@@ -31,6 +31,7 @@ lab.experiment("Hapi Ending", function() {
             description: parent.nextUntil('h1', '.endpoint-description').text(),
             query: table(html, parent.nextUntil('h1', '.query-table')),
             payload: table(html, parent.nextUntil('h1', '.payload-table')),
+            params: table(html, parent.nextUntil('h1', '.params-table'))
         }
     };
 
@@ -42,7 +43,8 @@ lab.experiment("Hapi Ending", function() {
                 rows.push({
                     key: html(this).find('td').slice(0,1).text(),
                     type: html(this).find('td').slice(1,2).text(),
-                    description: html(this).find('td').slice(2,3).text()
+                    description: html(this).find('td').slice(2,3).text(),
+                    valids: html(this).find('td').slice(3,4).find('.valid').map(function() { return html(this).text() }).get(),
                 });
             }
         );
@@ -94,13 +96,13 @@ lab.experiment("Hapi Ending", function() {
     lab.test("list endpoints", function(done) {
 
         expect(serverResponse.statusCode).to.equal(200);
-        expect(html('h1').length).to.equal(2);
+        expect(html('h1').length).to.equal(3);
 
         done();
 
     });
 
-    lab.test("get endpoints", function(done) {
+    lab.test("query validation", function(done) {
 
         var docs = documentation(html, '/checkout');
 
@@ -110,6 +112,9 @@ lab.experiment("Hapi Ending", function() {
         expect(docs.tags[1]).to.equal('two');
         expect(docs.tags[2]).to.equal('three');
         expect(docs.description).to.equal('Tests a checkout with items');
+
+        expect(docs.payload.rows.length).to.equal(0);
+        expect(docs.params.rows.length).to.equal(0);
 
         expect(docs.query.rows[0].key).to.equal('items');
         expect(docs.query.rows[0].type).to.equal('number');
@@ -126,6 +131,7 @@ lab.experiment("Hapi Ending", function() {
         expect(docs.description).to.equal("Don't put all your eggs in one basket");
 
         expect(docs.query.rows.length).to.equal(0);
+        expect(docs.params.rows.length).to.equal(0);
 
         expect(docs.payload.rows[0].key).to.equal('eggs');
         expect(docs.payload.rows[0].type).to.equal('number');
@@ -137,6 +143,23 @@ lab.experiment("Hapi Ending", function() {
 
         done();
 
-    })
+    });
+
+    lab.test("params validation", function(done) {
+
+        var docs = documentation(html, '/choices/{myParam}');
+
+        expect(docs.query.rows.length).to.equal(0);
+        expect(docs.payload.rows.length).to.equal(0);
+        expect(docs.params.rows.length).to.equal(1);
+
+        expect(docs.params.rows[0].key).to.equal('myParam');
+        expect(docs.params.rows[0].type).to.equal('string');
+        expect(docs.params.rows[0].description).to.equal('Your param');
+        expect(docs.params.rows[0].valids).to.deep.equal(['dogs', 'cats']);
+
+        done();
+
+    });
 
 });

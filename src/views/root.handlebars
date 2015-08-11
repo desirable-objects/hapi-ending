@@ -105,6 +105,7 @@
                         <td>Parameter</td>
                         <td>Type</td>
                         <td>Description</td>
+                        <td>Allowed Values</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,6 +114,7 @@
                         <td>{{key}}</td>
                         <td>{{schema._type}}</td>
                         <td>{{schema._description}}</td>
+                        <td><ul class="valids">{{#each schema._valids._set}}<li class="valid">{{this}}</li>{{/each}}</ul></td>
                     </tr>
                     {{/each}}
                 </tbody>
