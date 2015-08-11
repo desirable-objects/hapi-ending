@@ -60,7 +60,7 @@ exports.register = function (plugin, options, next) {
           routes: routes,
           baseUrl: options.baseUrl,
           logoUrl: options.logoUrl || '/assets/img/hapi-logo.svg',
-          documentationUrl: options.path || '/'
+          documentationUrl: options.path || ''
         });
     }
 
