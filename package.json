@@ -1,6 +1,6 @@
 {
   "name": "hapi-ending",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Creates documentation of the endpoints of an application",
   "keywords": [
     "hapi",
