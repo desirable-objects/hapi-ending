@@ -55,7 +55,11 @@ exports.register = function (plugin, options, next) {
 
         });
 
-        reply({categorised: categorised, routes: routes, baseUrl: options.baseUrl});
+        reply({
+          categorised: categorised,
+          routes: routes,
+          baseUrl: options.baseUrl
+          logoUrl: options.logoUrl || '/assets/img/hapi-logo.png'});
     }
 
     plugin.route({
