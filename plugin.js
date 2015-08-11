@@ -58,8 +58,8 @@ exports.register = function (plugin, options, next) {
         reply({
           categorised: categorised,
           routes: routes,
-          baseUrl: options.baseUrl
-          logoUrl: options.logoUrl || '/assets/img/hapi-logo.png'});
+          baseUrl: options.baseUrl,
+          logoUrl: options.logoUrl || '/assets/img/hapi-logo.svg'});
     }
 
     plugin.route({

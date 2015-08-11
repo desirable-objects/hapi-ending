@@ -46,8 +46,8 @@
         <div class="dark-box"></div>
         <div class="content">
           {{#each routes}}
-            <h1 id='{{path}}'>{{path}}</h1>
-            <h2 id='{{fullQuery}}'>{{fullQuery}}</h2>
+            <h1 id='{{idify path}}'>{{path}}</h1>
+            <h2 id='{{idify fullQuery}}'>{{fullQuery}}</h2>
 
             <pre style="display: block;">
               <code class="highlight shell">curl
