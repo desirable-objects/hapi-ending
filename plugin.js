@@ -52,10 +52,10 @@ exports.register = function (plugin, options, next) {
                 object: {foo: 'bar'}
               }
 
-              var data = _.map(route.settings.validate.payload._inner.children, function(child) {
-                  return sf('{key}={example}', {key: child.key, example: examples[child.schema._type]});
-              });
-              route.jsonPayload = data.join('&');
+              route.jsonPayload = {};
+              for (var child of route.settings.validate.payload._inner.children) {
+                route.jsonPayload[child.key] = examples[child.schema._type];
+              }
 
             }
 
@@ -65,15 +65,17 @@ exports.register = function (plugin, options, next) {
           categorised: categorised,
           routes: publicRoutes,
           baseUrl: options.baseUrl,
-          logoUrl: options.logoUrl || '/assets/img/hapi-logo.svg',
+          assetsPath: options.assetsPath,
+          logoUrl: options.logoUrl || `/${options.assetsPath || 'assets'}/img/hapi-logo.svg`,
           documentationUrl: options.path || ''
         });
     }
 
     plugin.route({
         method: 'GET',
-        path: (options.path || '') + '/assets/{param*}',
+        path: `${options.path || ''}/${options.assetsPath || 'assets'}/{param*}`,
         config: {
+          auth: false,
           description: "Asset delivery url for hapi-ending plugin",
           tags: ['metadata', 'private', 'api', 'assets']
         },
@@ -89,6 +91,7 @@ exports.register = function (plugin, options, next) {
         method: 'GET',
         path: options.path || '/',
         config: {
+            auth: false,
             pre: [
                 { assign: 'model', method: calculateRoutingTable }
             ],

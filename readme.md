@@ -1,6 +1,6 @@
 ### Hapi Ending
 
-Lists routes, parameters, and validation constraints for HAPI version 8.
+Lists routes, parameters, and validation constraints for HAPI version 12.x.
 
 ## Plugin status
 
@@ -14,9 +14,10 @@ Lists routes, parameters, and validation constraints for HAPI version 8.
 
     Currently you can configure the baseUrl which is useful if you want to copy and paste urls, and whether the plugin is enabled or not. Disabling the plugin is highly advised for production environments.
 
-    var whatamiConfig = {
+    var options = {
         baseUrl: 'http://your.domain:1234' // defaults to protocol-less server host+port,
-        enabled: true // defaults to false
+        enabled: true // defaults to false,
+        assetsPath: '/mount-point-for-plugin-assets' // defaults to 'assets' - change if this conflicts with your own routes
     }
 
 ## Live Demo
@@ -29,12 +30,12 @@ To run a quick local demo, use the npm target 'demo':
 
 Install the plugin in the standard way:
 
-    server.pack.register([
+    server.register([
         {
-            plugin: require('hapi-ending'),
-            whatamiConfig
+            register: require('hapi-ending'),
+            options: options
         }
-    ], function pluginsRegistered(err) {
+    ], (err) => {
         ...
     }
 
