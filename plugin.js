@@ -2,7 +2,7 @@
 
 var sf = require('sf');
 var Path = require('path');
-var _ = require('lodash-node');
+var _ = require('lodash');
 
 exports.register = function (plugin, options, next) {
 
@@ -23,7 +23,17 @@ exports.register = function (plugin, options, next) {
     plugin.views(views);
 
     function calculateRoutingTable(request, reply) {
-        var routes = _.pluck(request.server.table()[0].table, 'public');
+
+        var tables = _.mapValues(request.server.table(), 'table');
+        var allRoutes = [];
+
+        var i = 0;
+        _.each(tables, function(table) {
+          _.merge(allRoutes, table);
+        });
+
+        console.log(allRoutes);
+        var routes = _.mapValues(allRoutes, 'public');
 
         var publicRoutes = _.reject(routes, function(route) {
           return route.settings.tags ? (route.settings.tags.indexOf('private') > -1) : false;
