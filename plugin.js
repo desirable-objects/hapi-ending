@@ -32,7 +32,6 @@ exports.register = function (plugin, options, next) {
           _.merge(allRoutes, table);
         });
 
-        console.log(allRoutes);
         var routes = _.mapValues(allRoutes, 'public');
 
         var publicRoutes = _.reject(routes, function(route) {
