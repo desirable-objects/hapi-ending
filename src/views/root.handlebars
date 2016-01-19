@@ -98,7 +98,9 @@ request(options, function (error, response, body) {
                         <td>Parameter</td>
                         <td>Type</td>
                         <td>Description</td>
+                        {{#if schema._valids._set}}
                         <td>Allowed Values</td>
+                        {{/if}}
                     </tr>
                 </thead>
                 <tbody>
@@ -107,7 +109,9 @@ request(options, function (error, response, body) {
                         <td>{{key}}</td>
                         <td>{{schema._type}}</td>
                         <td>{{schema._description}}</td>
+                        {{#if schema._valids._set}}
                         <td><ul class="valids">{{#each schema._valids._set}}<li class="valid">{{this}}</li>{{/each}}</ul></td>
+                        {{/if}}
                     </tr>
                     {{/each}}
                 </tbody>
