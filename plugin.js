@@ -12,6 +12,15 @@ exports.register = function (plugin, options, next) {
 
     plugin.path(Path.join(__dirname, '.'));
 
+    plugin.register([
+      require('vision'),
+      require('inert')
+    ], (err) => {
+        if (err) {
+            console.error('Failed to load plugin:', err);
+        }
+    });
+
     var views = {
         engines: {
             handlebars: require('handlebars')
@@ -115,4 +124,6 @@ exports.register = function (plugin, options, next) {
     next();
 };
 
-exports.register.attributes = { pkg: require('./package.json') };
+exports.register.attributes = {
+  pkg: require('./package.json')
+};
