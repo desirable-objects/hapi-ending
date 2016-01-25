@@ -79,12 +79,14 @@ exports.register = function (plugin, options, next) {
 
         });
 
+        let assetsPath = options.assetsPath || 'assets';
+
         reply({
           categorised: categorised,
           routes: publicRoutes,
           baseUrl: options.baseUrl,
-          assetsPath: options.assetsPath,
-          logoUrl: options.logoUrl || `/${options.assetsPath || 'assets'}/img/hapi-logo.svg`,
+          assetsPath: assetsPath,
+          logoUrl: options.logoUrl || `/${assetsPath}/img/hapi-logo.svg`,
           documentationUrl: options.path || ''
         });
     }
