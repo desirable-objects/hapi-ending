@@ -53,6 +53,29 @@ module.exports = [
           }
       },
       handler: handler
+  },
+
+  {
+      method: 'POST',
+      path: '/so/much/of/validatable',
+      config: {
+          validate: {
+              payload: {
+                  children: Joi.object().keys({
+                    name: Joi.string().required()
+                  }),
+                  toys: Joi.array().items(Joi.string()),
+                  ancestors: Joi.object().keys({
+                    size: Joi.number(),
+                    width: Joi.number(),
+                    features: Joi.object().keys({
+                      likesNesting: Joi.boolean().required()
+                    })
+                  })
+              }
+          }
+      },
+      handler: handler
   }
 
 ];

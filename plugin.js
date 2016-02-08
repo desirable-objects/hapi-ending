@@ -67,13 +67,25 @@ exports.register = function (plugin, options, next) {
                 string: 'qux',
                 number: 123,
                 array: ['foo', 'bar', 'baz'],
-                object: {foo: 'bar'}
+                object: {foo: 'bar'},
+                boolean: true
               }
 
-              route.jsonPayload = {};
-              for (var child of route.settings.validate.payload._inner.children) {
-                route.jsonPayload[child.key] = examples[child.schema._type];
+              function mapRecursively(validations) {
+
+                if (validations.length === 0) { return; }
+
+                let validatables = {};
+
+                for (var child of validations) {
+                  validatables[child.key] = child.schema._type === 'object' ? mapRecursively(child.schema._inner.children) : examples[child.schema._type];
+                }
+
+                return validatables;
+
               }
+
+              route.jsonPayload = mapRecursively(route.settings.validate.payload._inner.children);
 
             }
 
