@@ -96,7 +96,7 @@ lab.experiment("Hapi Ending", function() {
     lab.test("list endpoints", function(done) {
 
         expect(serverResponse.statusCode).to.equal(200);
-        expect(html('h1').length).to.equal(3);
+        expect(html('h1').length).to.equal(4);
 
         done();
 
