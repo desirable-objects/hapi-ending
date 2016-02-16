@@ -73,7 +73,7 @@ exports.register = function (plugin, options, next) {
 
               function mapRecursively(validations) {
 
-                if (validations.length === 0) { return; }
+                if (!validations || validations.length === 0) { return; }
 
                 let validatables = {};
 
