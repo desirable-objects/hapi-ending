@@ -68,7 +68,8 @@ exports.register = function (plugin, options, next) {
                 number: 123,
                 array: ['foo', 'bar', 'baz'],
                 object: {foo: 'bar'},
-                boolean: true
+                boolean: true,
+                date: new Date().toISOString()
               }
 
               function mapRecursively(validations) {
@@ -78,7 +79,7 @@ exports.register = function (plugin, options, next) {
                 let validatables = {};
 
                 for (var child of validations) {
-                  validatables[child.key] = child.schema._type === 'object' ? mapRecursively(child.schema._inner.children) : examples[child.schema._type];
+                  validatables[child.key] = child.schema._type === 'object' ? mapRecursively(child.schema._inner.children) : examples[child.schema._type] || '...';
                 }
 
                 return validatables;
