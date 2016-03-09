@@ -79,6 +79,7 @@ exports.register = function (plugin, options, next) {
                 let validatables = {};
 
                 for (var child of validations) {
+
                   validatables[child.key] = child.schema._type === 'object' ? mapRecursively(child.schema._inner.children) : examples[child.schema._type] || '...';
                 }
 
