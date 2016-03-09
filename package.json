@@ -31,8 +31,10 @@
   "dependencies": {
     "code": "2.1.0",
     "coveralls": "2.11.6",
+    "dot-object": "^1.4.1",
     "handlebars": "4.0.5",
     "hapi": "12.1.0",
+    "hoek": "^3.0.4",
     "inert": "3.2.0",
     "joi": "7.2.2",
     "lodash": "4.0.0",

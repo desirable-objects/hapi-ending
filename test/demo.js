@@ -14,7 +14,8 @@ server.register({
 
         server.route(require('./routes/example.js'));
 
-        //console.log(server.table()[0].table[0].public);
+        //console.log(server.table()[0]);
+        //console.log(server.table()[0].table[0].public.settings.validate);
 
         server.start(function() {
             console.log("Hapi server started @", server.info.uri);

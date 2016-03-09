@@ -24,6 +24,7 @@ function buildRoute(method) {
                 key: 'items',
                 schema: {
                   _type: 'string',
+                  _description: null,
                   _valids: {
                     _set: ['four', 'five']
                   }
@@ -39,7 +40,7 @@ function buildRoute(method) {
 
 lab.experiment('Route Flattener', () => {
 
-  lab.test('Flattens a routing table', (done) => {
+  lab.test('Flattens a single route', (done) => {
 
     let singleRouteWithQuery = buildRoute('get');
 
@@ -49,16 +50,45 @@ lab.experiment('Route Flattener', () => {
       notes: ['Counts Numbers'],
       validation: {
         query: {
-          items: {
-            type: 'string',
-            valid: ['four', 'five']
+          elements: {
+            items: {
+              type: 'string',
+              valid: ['four', 'five']
+            }
           }
         }
       }
     }
 
     let flat = flattener.flattenEntry(singleRouteWithQuery);
-    expect(flat).to.deep.equal(output);
+    expect(flat).to.deep.include(output);
+    done();
+
+  });
+
+  lab.test('Provides example', (done) => {
+
+    let singleRouteWithQuery = buildRoute('get');
+
+    let output = {
+      tags: ['one', 'two'],
+      description: 'One Two',
+      notes: ['Counts Numbers'],
+      validation: {
+        query: {
+          example: 'items=four',
+          elements: {
+            items: {
+              type: 'string',
+              valid: ['four', 'five']
+            }
+          }
+        }
+      }
+    }
+
+    let flat = flattener.flattenEntry(singleRouteWithQuery);
+    expect(flat).to.deep.include(output);
     done();
 
   });
@@ -80,17 +110,30 @@ lab.experiment('Route Flattener', () => {
 
   });
 
-  lab.test('Groups by endpoint', (done) => {
+  lab.test('Merges all servers', (done) => {
 
-    let tables = [
-      { public: buildRoute('get') },
-      { public: buildRoute('post') },
-      { public: buildRoute('put') }
-    ];
+    let server = {
+      tables: function() {
+        return [
+          {
+            table: [
+              buildRoute('get'),
+              buildRoute('put')
+           ]
+         },
+         {
+           table: [
+             buildRoute('post'),
+             buildRoute('delete'),
+             buildRoute('options')
+          ]
+        },
+        ]
+      }
+    }
 
-    let flat = flattener.flatten(tables);
-    expect(Object.keys(flat).length).to.equal(1);
-    expect(Object.keys(flat['/counter']).length).to.equal(3);
+    let routes = flattener.fetchRoutes(server);
+    expect(routes.length).to.equal(5);
     done();
 
   });
@@ -113,6 +156,7 @@ lab.experiment('Route Flattener', () => {
                   schema: {
                     _type: 'object',
                     _valids: {},
+                    _description: null,
                     _inner: {
                         children: [
                           {
@@ -120,12 +164,14 @@ lab.experiment('Route Flattener', () => {
                             schema: {
                               _type: 'object',
                               _valids: {},
+                              _description: null,
                               _inner: {
                                   children: [
                                     {
                                       key: 'three',
                                       schema: {
                                         _type: 'string',
+                                        _description: null,
                                         _valids: {},
                                         _inner: {}
                                       }
@@ -151,46 +197,27 @@ lab.experiment('Route Flattener', () => {
           notes: ['Counts Numbers'],
           validation: {
             payload: {
-              one: {
-                type: 'object'
-              },
-              'one.two': {
-                type: 'object'
-              },
-              'one.two.three': {
-                type: 'string'
+              elements: {
+                one: {
+                  type: 'object'
+                },
+                'one.two': {
+                  type: 'object'
+                },
+                'one.two.three': {
+                  type: 'string'
+                }
               }
             }
           }
         }
 
     let flat = flattener.flattenEntry(depth);
-    expect(flat).to.deep.equal(output);
+    expect(flat).to.deep.include(output);
     done();
 
   });
 
+
+
 });
-
-/**
-console.log(server.table()[0].table[0].settings.validate.query._inner.children);
-
-[ { key: 'items',
-schema:
-{ isJoi: true,
-_type: 'number',
-_settings: null,
-_valids: [Object],
-_invalids: [Object],
-_tests: [],
-_refs: [],
-_flags: {},
-_description: 'Number of items in the cart',
-_unit: null,
-_notes: [],
-_tags: [],
-_examples: [],
-_meta: [],
-_inner: {} } } ]
-
-***/
