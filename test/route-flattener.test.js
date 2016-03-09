@@ -8,7 +8,34 @@ var expect = Code.expect;
 
 let flattener = require('../src/route-flattener');
 
-function buildRoute(method) {
+function buildPrivateRoute() {
+  return {
+    settings: {
+      tags: ['private']
+    }
+  }
+}
+
+function buildRoute(method, validationType) {
+
+  let validate = {};
+  validate[validationType] = {
+    _inner: {
+      children: [
+        {
+          key: 'items',
+          schema: {
+            _type: 'string',
+            _description: null,
+            _valids: {
+              _set: ['four', 'five']
+            }
+          }
+        }
+      ]
+    }
+  };
+
   return {
     path: '/counter',
     method: method,
@@ -16,24 +43,7 @@ function buildRoute(method) {
       tags: ['one', 'two'],
       description: 'One Two',
       notes: ['Counts Numbers'],
-      validate: {
-        query: {
-          _inner: {
-            children: [
-              {
-                key: 'items',
-                schema: {
-                  _type: 'string',
-                  _description: null,
-                  _valids: {
-                    _set: ['four', 'five']
-                  }
-                }
-              }
-            ]
-          }
-        }
-      }
+      validate
     }
   }
 }
@@ -42,7 +52,7 @@ lab.experiment('Route Flattener', () => {
 
   lab.test('Flattens a single route', (done) => {
 
-    let singleRouteWithQuery = buildRoute('get');
+    let singleRouteWithQuery = buildRoute('get', 'query');
 
     let output = {
       tags: ['one', 'two'],
@@ -66,9 +76,9 @@ lab.experiment('Route Flattener', () => {
 
   });
 
-  lab.test('Provides example', (done) => {
+  lab.test('Provides query example', (done) => {
 
-    let singleRouteWithQuery = buildRoute('get');
+    let singleRouteWithQuery = buildRoute('get', 'query');
 
     let output = {
       tags: ['one', 'two'],
@@ -93,14 +103,39 @@ lab.experiment('Route Flattener', () => {
 
   });
 
+  lab.test('Provides payload example', (done) => {
+
+    let singleRouteWithQuery = buildRoute('get', 'payload');
+
+    let output = {
+      tags: ['one', 'two'],
+      description: 'One Two',
+      notes: ['Counts Numbers'],
+      validation: {
+        payload: {
+          example: {items: 'four'},
+          elements: {
+            items: {
+              type: 'string',
+              valid: ['four', 'five']
+            }
+          }
+        }
+      }
+    }
+
+    let flat = flattener.flattenEntry(singleRouteWithQuery);
+    expect(flat).to.deep.include(output);
+    done();
+
+  });
+
   lab.test('Groups by endpoint', (done) => {
 
-    // server.table()[0].table[0]
-
     let tables = [
-      { public: buildRoute('get') },
-      { public: buildRoute('post') },
-      { public: buildRoute('put') }
+      { public: buildRoute('get', 'query') },
+      { public: buildRoute('post', 'query') },
+      { public: buildRoute('put', 'query') }
     ];
 
     let flat = flattener.flatten(tables);
@@ -117,15 +152,15 @@ lab.experiment('Route Flattener', () => {
         return [
           {
             table: [
-              buildRoute('get'),
-              buildRoute('put')
+              buildRoute('get', 'query'),
+              buildRoute('put', 'query')
            ]
          },
          {
            table: [
-             buildRoute('post'),
-             buildRoute('delete'),
-             buildRoute('options')
+             buildRoute('post', 'query'),
+             buildRoute('delete', 'query'),
+             buildRoute('options', 'query')
           ]
         },
         ]
@@ -134,6 +169,19 @@ lab.experiment('Route Flattener', () => {
 
     let routes = flattener.fetchRoutes(server);
     expect(routes.length).to.equal(5);
+    done();
+
+  });
+
+  lab.test('Ignores private routes', (done) => {
+
+    let table = [
+      { public: buildRoute('get', 'query') },
+      { public: buildPrivateRoute() }
+   ];
+
+    let routes = flattener.flatten(table);
+    expect(Object.keys(routes).length).to.equal(1);
     done();
 
   });

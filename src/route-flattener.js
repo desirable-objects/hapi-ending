@@ -39,15 +39,14 @@ class RouteFlattener {
 
         switch (validationType) {
           case 'query':
-            example = Object.keys(items).map((item) => {
-              let preferredValue = items[item].valid ? items[item].valid[0] : items[item].example;
-              return `${item}=${preferredValue}`;
+            example = Object.keys(items).map((key) => {
+              return `${key}=${this._example(items, key)}`;
             }).join('&');
             break;
           case 'payload':
             let mapping = {};
             for (let key of Object.keys(items)) {
-              mapping[key] = items[key].example;
+              mapping[key] = this._example(items, key);
             }
             example = dot.object(mapping);
             break;
@@ -64,6 +63,10 @@ class RouteFlattener {
 
     return endpoint;
 
+  }
+
+  _example(items, key) {
+    return items[key].valid ? items[key].valid[0] : items[key].example;
   }
 
   recursivelyAbsorb(children, parentKey, master) {
@@ -104,11 +107,13 @@ class RouteFlattener {
     for (let endpoint of table) {
 
       let plc = endpoint.public;
+      if (plc.settings.tags.indexOf('private') === -1) {
+        routing[plc.path] = routing[plc.path] || {};
+        routing[plc.path][plc.method] = this.flattenEntry(plc);
+      }
 
-      routing[plc.path] = routing[plc.path] || {};
-      routing[plc.path][plc.method] = this.flattenEntry(plc);
     }
-
+    
     return routing;
 
   }
