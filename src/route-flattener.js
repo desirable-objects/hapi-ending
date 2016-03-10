@@ -33,8 +33,9 @@ class RouteFlattener {
 
     for (let validationType of Object.keys(validationTypes)) {
 
+      endpoint.validation = {};
+
       if (entry.settings.validate[validationType]) {
-        endpoint.validation = {};
         endpoint.validation[validationType] = {
           humanName: validationTypes[validationType],
           elements: {}
@@ -88,7 +89,16 @@ class RouteFlattener {
     return (items[key].valid && items[key].valid.length > 1) ? items[key].valid[0] : items[key].example;
   }
 
+  _isIterable(obj) {
+    if (obj == null) {
+      return false
+    }
+    return obj[Symbol.iterator] !== undefined
+  }
+
   recursivelyAbsorb(children, parentKey, master) {
+
+    if (!this._isIterable(children)) { return; }
 
     for (let param of children) {
 
@@ -130,7 +140,11 @@ class RouteFlattener {
       let plc = endpoint.public;
       if (!plc.settings.tags || plc.settings.tags.indexOf('private') === -1) {
         routing[plc.path] = routing[plc.path] || {};
-        routing[plc.path][plc.method] = this.flattenEntry(plc);
+        try {
+          routing[plc.path][plc.method] = this.flattenEntry(plc);
+        } catch (e) {
+          console.error(e, e.stack);
+        }
         routing[plc.path][plc.method].validation.params = routing[plc.path][plc.method].validation.params || { example: plc.path };
       }
 
