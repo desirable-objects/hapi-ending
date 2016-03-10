@@ -19,11 +19,12 @@ class RouteFlattener {
 
   flattenEntry(entry) {
 
-    let endpoint = {};
-
-    endpoint.tags = entry.settings.tags;
-    endpoint.description = entry.settings.description;
-    endpoint.notes = entry.settings.notes;
+    let endpoint = {
+      tags: entry.settings.tags,
+      description: entry.settings.description,
+      notes: entry.settings.notes,
+      validation: {}
+    };
 
     let validationTypes = {
       query: 'Query String',
@@ -32,8 +33,6 @@ class RouteFlattener {
     }
 
     for (let validationType of Object.keys(validationTypes)) {
-
-      endpoint.validation = {};
 
       if (entry.settings.validate[validationType]) {
         endpoint.validation[validationType] = {
