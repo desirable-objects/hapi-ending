@@ -17,7 +17,8 @@ Lists routes, parameters, and validation constraints for HAPI version 12.x.
     var options = {
         baseUrl: 'http://your.domain:1234' // defaults to protocol-less server host+port,
         enabled: true // defaults to false,
-        assetsPath: '/mount-point-for-plugin-assets' // defaults to 'assets' - change if this conflicts with your own routes
+        assetsPath: '/mount-point-for-plugin-assets' // defaults to 'assets' - change if this conflicts with your own routes,
+        logoUrl: 'http://example.net/logo.webp'
     }
 
 ## Live Demo
