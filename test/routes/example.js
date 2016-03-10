@@ -48,7 +48,7 @@ module.exports = [
       config: {
           validate: {
               params: {
-                  myParam: Joi.string().allow('dogs', 'cats').description('Your param'),
+                  myParam: Joi.string().allow('dogs', 'cats').description('Your param')
               }
           }
       },

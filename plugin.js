@@ -4,6 +4,8 @@ var sf = require('sf');
 var Path = require('path');
 var _ = require('lodash');
 
+let routeFlattener = require('./src/route-flattener');
+
 exports.register = function (plugin, options, next) {
 
     if (!options.enabled) {
@@ -31,79 +33,21 @@ exports.register = function (plugin, options, next) {
 
     plugin.views(views);
 
-    function calculateRoutingTable(request, reply) {
+    function routing(svr, options, next) {
 
-        var tables = _.mapValues(request.server.table(), 'table');
-        var allRoutes = [];
+        let assetsPath = options.assetsPath || 'assets',
+            allRoutes = routeFlattener.fetchRoutes(svr);
 
-        var i = 0;
-        _.each(tables, function(table) {
-          _.merge(allRoutes, table);
-        });
-
-        var routes = _.mapValues(allRoutes, 'public');
-
-        var publicRoutes = _.reject(routes, function(route) {
-          return route.settings.tags ? (route.settings.tags.indexOf('private') > -1) : false;
-        });
-
-        var categorised = _.groupBy(publicRoutes, function(route) { return route.method; });
-
-        _.each(publicRoutes, function(route, i) {
-
-            route.fullQuery = route.path;
-
-            if (route.settings.validate.query) {
-
-                var query = _.map(route.settings.validate.query._inner.children, function(child) {
-                    return sf('{key}=<{schema._type}>', child);
-                });
-                route.fullQuery += sf('?{queryString}', { queryString: query.join('&') });
-            }
-
-            if (route.settings.validate.payload) {
-
-              var examples = {
-                string: 'qux',
-                number: 123,
-                array: ['foo', 'bar', 'baz'],
-                object: {foo: 'bar'},
-                boolean: true,
-                date: new Date().toISOString()
-              }
-
-              function mapRecursively(validations) {
-
-                if (!validations || validations.length === 0) { return; }
-
-                let validatables = {};
-
-                for (var child of validations) {
-
-                  validatables[child.key] = child.schema._type === 'object' ? mapRecursively(child.schema._inner.children) : examples[child.schema._type] || '...';
-                }
-
-                return validatables;
-
-              }
-
-              route.jsonPayload = mapRecursively(route.settings.validate.payload._inner.children);
-
-            }
-
-        });
-
-        let assetsPath = options.assetsPath || 'assets';
-
-        reply({
-          categorised: categorised,
-          routes: publicRoutes,
+        return next(null, {
+          routes: routeFlattener.flatten(allRoutes),
           baseUrl: options.baseUrl,
-          assetsPath: assetsPath,
+          assetsPath,
           logoUrl: options.logoUrl || `/${assetsPath}/img/hapi-logo.svg`,
           documentationUrl: options.path || ''
         });
     }
+
+    plugin.method('routing', routing, { generateKey: () => { return 'routing' }, cache: { expiresIn: 60000, generateTimeout: 30000 } });
 
     plugin.route({
         method: 'GET',
@@ -126,14 +70,13 @@ exports.register = function (plugin, options, next) {
         path: options.path || '/',
         config: {
             auth: false,
-            pre: [
-                { assign: 'model', method: calculateRoutingTable }
-            ],
             description: "Describes endpoints in your application",
             tags: ['metadata', 'private', 'api']
         },
         handler: function(request, reply) {
-            return reply.view('root', request.pre.model);
+          request.server.methods.routing(request.server, options, (err, model) => {
+            return reply.view('root', model);
+          });
         }
     });
 

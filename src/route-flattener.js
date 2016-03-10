@@ -25,13 +25,21 @@ class RouteFlattener {
     endpoint.description = entry.settings.description;
     endpoint.notes = entry.settings.notes;
 
-    for (let validationType of ['query', 'params', 'payload']) {
+    let validationTypes = {
+      query: 'Query String',
+      params: 'URI Components',
+      payload: 'JSON Payload'
+    }
 
-      if (entry.settings.validate.hasOwnProperty(validationType)) {
+    for (let validationType of Object.keys(validationTypes)) {
+
+      if (entry.settings.validate[validationType]) {
         endpoint.validation = {};
         endpoint.validation[validationType] = {
+          humanName: validationTypes[validationType],
           elements: {}
         };
+
         this.recursivelyAbsorb(entry.settings.validate[validationType]._inner.children, null, endpoint.validation[validationType].elements);
 
         let items = endpoint.validation[validationType].elements,
@@ -51,7 +59,10 @@ class RouteFlattener {
             example = dot.object(mapping);
             break;
           case 'params':
-            example = entry.settings.path;
+            example = entry.path;
+            for (let key of Object.keys(items)) {
+              example = example.replace('{'+key+'}', this._example(items, key));
+            }
             break;
         }
 
@@ -65,8 +76,16 @@ class RouteFlattener {
 
   }
 
+  _mapExamples(items) {
+    let mapping = {};
+    for (let key of Object.keys(items)) {
+      mapping[key] = this._example(items, key);
+    }
+    return mapping;
+  }
+
   _example(items, key) {
-    return items[key].valid ? items[key].valid[0] : items[key].example;
+    return (items[key].valid && items[key].valid.length > 1) ? items[key].valid[0] : items[key].example;
   }
 
   recursivelyAbsorb(children, parentKey, master) {
@@ -78,7 +97,7 @@ class RouteFlattener {
           type = param.schema._type,
           description = param.schema._description;
 
-      master[key] = { type, example: this.examples[type] || `<${type}>` };
+      master[key] = { type };
 
       if (this._notEmpty(valids)) {
         master[key].valid = valids._set;
@@ -90,6 +109,8 @@ class RouteFlattener {
 
       if (param.schema._type === 'object') {
         this.recursivelyAbsorb(param.schema._inner.children, key, master);
+      } else {
+        master[key].example = this.examples[type] || `<${type}>`;
       }
 
     }
@@ -107,13 +128,14 @@ class RouteFlattener {
     for (let endpoint of table) {
 
       let plc = endpoint.public;
-      if (plc.settings.tags.indexOf('private') === -1) {
+      if (!plc.settings.tags || plc.settings.tags.indexOf('private') === -1) {
         routing[plc.path] = routing[plc.path] || {};
         routing[plc.path][plc.method] = this.flattenEntry(plc);
+        routing[plc.path][plc.method].validation.params = routing[plc.path][plc.method].validation.params || { example: plc.path };
       }
 
     }
-    
+
     return routing;
 
   }
@@ -122,7 +144,7 @@ class RouteFlattener {
 
     let routes = [];
 
-    for (let table of server.tables()) {
+    for (let table of server.table()) {
       routes = routes.concat(table.table);
     }
 

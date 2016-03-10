@@ -9,7 +9,7 @@
 
     <link href="{{documentationUrl}}/{{assetsPath}}/css/screen.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="{{documentationUrl}}/{{assetsPath}}/css/ending.css" rel="stylesheet" type="text/css" media="screen" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
     <script src="{{documentationUrl}}/{{assetsPath}}/js/all.js" type="text/javascript"></script>
 
     <script>
@@ -47,118 +47,81 @@
         <div class="dark-box"></div>
         <div class="content">
           {{#each routes}}
-            <h1 id='{{idify path}}' data-path="{{path}}">{{path}}</h1>
-            <h2 id='{{idify fullQuery}}'>{{fullQuery}}</h2>
+            {{#each this}}
+              <h1 id='{{idify @../key}}' data-path="{{@../key}}">{{@../key}}</h1>
+              <h2 id='{{idify @../key @key}}'><span class="method">{{@key}}</span> {{validation.params.example}}</h2>
 
-            <pre style="display: block;">
-              <code class="highlight shell">curl <span class="s2">"{{fullQuery}}"</span> \
-                {{#if settings.validate.payload}}
-                  -H <span class="s2">"Content-Type: application/json"</span> \
-                  -d <span class="s2">'{{stringify jsonPayload}}'</span>
+              <pre style="display: block;">
+                <code class="highlight shell">curl <span class="s2">"{{validation.params.example}}"</span> \
+                  {{#if validation.payload}}
+                    -H <span class="s2">"Content-Type: application/json"</span> \
+                    -d <span class="s2">'{{stringify validation.payload.example}}'</span>
+                  {{/if}}
+                </code>
+              </pre>
+
+              <pre style="display: block;">
+  <code class="highlight javascript">
+  var request = require('request');
+
+  var options = {
+    method: '<span class="s2">{{@key}}</span>',
+    path: '<span class="s2">{{validation.params.example}}</span>',
+    {{#if validation.payload}}
+    json: true,
+    body: '<span class="s2">{{stringify validation.payload.example}}</span>'
+    {{/if}}
+  };
+
+  request(options, function (error, response, body) {
+    console.log(error, body);
+  });
+  </code>
+              </pre>
+
+              <p class="endpoint-description">{{description}}</p>
+
+              <h3>HTTP REQUEST</h3>
+              <p class="url-mapping"><code prettyprint="true"><span class="method">{{@key}}</span> {{@../key}}</code></p>
+
+              <h3>TAGS</h3>
+              <ul class="tags">
+                  {{#each tags}}
+                  <li class="tag">{{this}}</li>
+                  {{/each}}
+              </ul>
+
+              {{#each validation}}
+                {{#if elements}}
+                <h3>{{humanName}}</h3>
+                <table class="{{@key}}-table">
+                    <thead>
+                        <tr>
+                            <td>Key</td>
+                            <td>Type</td>
+                            <td>Description</td>
+                            <td>Allowed Values</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each elements}}
+                        <tr>
+                            <td>{{@key}}</td>
+                            <td>{{type}}</td>
+                            <td>{{description}}</td>
+                            <td>
+                              {{#if valid}}
+                                <ul class="valids">{{#each valid}}<li class="valid">{{this}}</li>{{/each}}</ul>
+                              {{/if}}
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
                 {{/if}}
-              </code>
-            </pre>
+              {{/each}}
 
-            <pre style="display: block;">
-<code class="highlight javascript">
-var request = require('request');
-
-var options = {
-  method: '<span class="s2">{{method}}</span>',
-  path: '<span class="s2">{{fullQuery}}</span>',
-  {{#if settings.validate.payload}}
-  json: true,
-  body: {{stringify jsonPayload}}
-  {{/if}}
-};
-
-request(options, function (error, response, body) {
-  console.log(error, body);
-});
-</code>
-            </pre>
-
-            <p class="endpoint-description">{{settings.description}}</p>
-
-            <h3>HTTP REQUEST</h3>
-            <p class="url-mapping"><code prettyprint="true"><span class="method">{{method}}</span> {{path}}</code></p>
-
-            <h3>TAGS</h3>
-            <ul class="tags">
-                {{#each settings.tags}}
-                <li class="tag">{{this}}</li>
-                {{/each}}
-            </ul>
-
-            {{#if settings.validate.params}}
-            <h3>URI Components</h3>
-            <table class="params-table">
-                <thead>
-                    <tr>
-                        <td>Parameter</td>
-                        <td>Type</td>
-                        <td>Description</td>
-                        <td>Allowed Values</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each settings.validate.params._inner.children}}
-                    <tr>
-                        <td>{{key}}</td>
-                        <td>{{schema._type}}</td>
-                        <td>{{schema._description}}</td>
-                        <td>
-                          {{#if schema._valids._set}}
-                            <ul class="valids">{{#each schema._valids._set}}<li class="valid">{{this}}</li>{{/each}}</ul>
-                          {{/if}}
-                          </td>
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-            {{/if}}
-            {{#if settings.validate.query}}
-            <h3>Query String</h3>
-            <table  class="query-table">
-                <thead>
-                    <tr>
-                        <td>Key</td>
-                        <td>Type</td>
-                        <td>Description</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each settings.validate.query._inner.children}}
-                    <tr>
-                        <td>{{key}}</td>
-                        <td>{{schema._type}}</td>
-                        <td>{{schema._description}}</td>
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-            {{/if}}
-            {{#if settings.validate.payload}}
-            <h3>JSON Payload</h3>
-            <table  class="payload-table">
-                <thead>
-                    <tr>
-                        <td>Attribute</td>
-                        <td>Type</td>
-                        <td>Description</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each settings.validate.payload._inner.children}}
-                    <tr>
-                        <td>{{key}}</td>
-                        <td>{{schema._type}}</td>
-                        <td>{{schema._description}}</td>
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-            {{/if}}
+            {{/each}}
           {{/each}}
         </div>
         <div class="dark-box">

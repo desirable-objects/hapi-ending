@@ -16,7 +16,7 @@ function buildPrivateRoute() {
   }
 }
 
-function buildRoute(method, validationType) {
+function buildRoute(method, validationType, description) {
 
   let validate = {};
   validate[validationType] = {
@@ -26,7 +26,7 @@ function buildRoute(method, validationType) {
           key: 'items',
           schema: {
             _type: 'string',
-            _description: null,
+            _description: description,
             _valids: {
               _set: ['four', 'five']
             }
@@ -52,7 +52,7 @@ lab.experiment('Route Flattener', () => {
 
   lab.test('Flattens a single route', (done) => {
 
-    let singleRouteWithQuery = buildRoute('get', 'query');
+    let singleRouteWithQuery = buildRoute('get', 'query', 'Thing the stuff');
 
     let output = {
       tags: ['one', 'two'],
@@ -63,7 +63,8 @@ lab.experiment('Route Flattener', () => {
           elements: {
             items: {
               type: 'string',
-              valid: ['four', 'five']
+              valid: ['four', 'five'],
+              description: 'Thing the stuff'
             }
           }
         }
@@ -148,7 +149,7 @@ lab.experiment('Route Flattener', () => {
   lab.test('Merges all servers', (done) => {
 
     let server = {
-      tables: function() {
+      table: function() {
         return [
           {
             table: [
@@ -227,6 +228,14 @@ lab.experiment('Route Flattener', () => {
                                   ]
                                 }
                               }
+                            },
+                            {
+                              key: 'extra',
+                              schema: {
+                                _type: 'number',
+                                _valids: {},
+                                _description: null
+                              }
                             }
                           ]
                         }
@@ -251,6 +260,9 @@ lab.experiment('Route Flattener', () => {
                 },
                 'one.two': {
                   type: 'object'
+                },
+                'one.extra': {
+                  type: 'number'
                 },
                 'one.two.three': {
                   type: 'string'
