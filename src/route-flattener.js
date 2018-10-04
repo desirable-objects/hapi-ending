@@ -30,7 +30,7 @@ class RouteFlattener {
       query: 'Query String',
       params: 'URI Components',
       payload: 'JSON Payload'
-    }
+    };
 
     for (let validationType of Object.keys(validationTypes)) {
 
@@ -158,7 +158,7 @@ class RouteFlattener {
     let routes = [];
 
     for (let table of server.table()) {
-      routes = routes.concat(table.table);
+      routes = routes.concat(table);
     }
 
     return routes;

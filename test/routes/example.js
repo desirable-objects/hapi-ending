@@ -1,7 +1,7 @@
-var Joi = require('joi');
+const Joi = require('joi');
 
-function handler(request, reply) {
-    return reply().code(200);
+function handler(request, h) {
+    return h.response().code(200);
 }
 
 module.exports = [
