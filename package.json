@@ -29,22 +29,22 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "code": "2.1.0",
-    "coveralls": "2.11.6",
+    "code": "^5.2.0",
+    "coveralls": "^3.0.2",
     "dot-object": "^1.4.1",
     "handlebars": "4.0.5",
-    "hapi": "12.1.0",
-    "hoek": "^3.0.4",
-    "inert": "3.2.0",
-    "joi": "7.2.2",
-    "lodash": "4.0.0",
+    "hapi": "^17.6.0",
+    "hoek": "^5.0.4",
+    "inert": "^5.1.0",
+    "joi": "^13.7.0",
+    "lodash": "^4.17.11",
     "sf": "0.1.8",
     "shortid": "2.2.4",
-    "vision": "4.0.1"
+    "vision": "^5.4.0"
   },
   "devDependencies": {
-    "cheerio": "0.19.0",
-    "jshint": "2.9.1",
-    "lab": "8.2.0"
+    "cheerio": "^0.22.0",
+    "jshint": "^2.9.6",
+    "lab": "^16.1.0"
   }
 }
