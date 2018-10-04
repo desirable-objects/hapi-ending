@@ -1,28 +1,22 @@
-var Lab = require("lab"),
-    Code = require('code'),
-    cheerio = require('cheerio');
-    lab = exports.lab = Lab.script();
+const Lab = require("lab"),
+      Code = require('code'),
+      Hapi = require('hapi'),
+      cheerio = require('cheerio');
 
-var Hapi = require('hapi'),
-    server = require("../plugin");
+const lab = exports.lab = Lab.script();
+const expect = Code.expect;
 
-var expect = Code.expect;
+lab.experiment("Hapi Ending", () => {
 
-lab.experiment("Hapi Ending", function() {
-
-    var server = null,
-        serverResponse,
-        html;
-
-    var defaultRoute = {
+    let html, server, serverResponse;
+    let defaultRoute = {
         method: "GET",
-        url: "/",
-        accepts: 'application/json'
+        url: "/"
     };
 
     function documentation(html, endpoint) {
 
-        var parent = html('h1[data-path="'+endpoint+'"]');
+        const parent = html('h1[data-path="'+endpoint+'"]');
 
         return {
             title: parent.text(),
@@ -33,18 +27,19 @@ lab.experiment("Hapi Ending", function() {
             payload: table(html, parent.nextUntil('h1', '.payload-table')),
             params: table(html, parent.nextUntil('h1', '.params-table'))
         }
-    };
+    }
 
     function table(html, parent) {
 
-        var rows = [];
-        var row = parent.find('tbody tr').each(
+        let rows = [];
+
+        parent.find('tbody tr').each(
             function(i, el) {
                 rows.push({
                     key: html(this).find('td').slice(0,1).text(),
                     type: html(this).find('td').slice(1,2).text(),
                     description: html(this).find('td').slice(2,3).text(),
-                    valids: html(this).find('td').slice(3,4).find('.valid').map(function() { return html(this).text() }).get(),
+                    valid: html(this).find('td').slice(3,4).find('.valid').map(function() { return html(this).text() }).get(),
                 });
             }
         );
@@ -54,59 +49,43 @@ lab.experiment("Hapi Ending", function() {
         }
     }
 
-    lab.before(function(done) {
+    lab.before(async () => {
 
-        server = new Hapi.Server();
-        server.connection({
+        server = new Hapi.Server({
             host: 'localhost',
             port: 3000
         });
 
         server.route(require('./routes/example'));
 
-        var serverOptions = {
+        const serverOptions = {
             enabled: true,
             logoUrl: '/blah/ping.png'
         };
 
-        server.register({
-            register: require('../plugin'),
+        await server.register([{
+            plugin: require('../plugin'),
             options: serverOptions
-        }, function() {
+        }]);
 
-
-          server.inject(defaultRoute, function(response) {
-            serverResponse = response;
-            html = cheerio.load(response.result);
-            done();
-          });
-
-        });
+        serverResponse = await server.inject(defaultRoute);
+        html = cheerio.load(serverResponse.result);
     });
 
-    lab.test("logo url is correct", function(done) {
-
+    lab.test("logo url is correct", () => {
         expect(serverResponse.statusCode).to.equal(200);
         expect(html('.tocify-wrapper img').attr('src')).to.equal('/blah/ping.png');
-
-        done();
-
     });
 
-    lab.test("list endpoints", function(done) {
-
+    lab.test("list endpoints", () => {
         expect(serverResponse.statusCode).to.equal(200);
         expect(html('h1').length).to.equal(4);
-
-        done();
-
     });
 
-    lab.test("query validation", function(done) {
+    lab.test("query validation", () => {
+        const docs = documentation(html, '/checkout');
 
-        var docs = documentation(html, '/checkout');
-
-        expect(docs.title).to.equal('/checkout')
+        expect(docs.title).to.equal('/checkout');
         expect(docs.urlMapping).to.equal('get /checkout');
         expect(docs.tags[0]).to.equal('one');
         expect(docs.tags[1]).to.equal('two');
@@ -119,14 +98,10 @@ lab.experiment("Hapi Ending", function() {
         expect(docs.query.rows[0].key).to.equal('items');
         expect(docs.query.rows[0].type).to.equal('number');
         expect(docs.query.rows[0].description).to.equal('Number of items in the cart');
-
-        done();
-
     });
 
-    lab.test("payload validation", function(done) {
-
-        var docs = documentation(html, '/choices/enders-game');
+    lab.test("payload validation", () => {
+        const docs = documentation(html, '/choices/enders-game');
 
         expect(docs.description).to.equal("Don't put all your eggs in one basket");
 
@@ -140,14 +115,10 @@ lab.experiment("Hapi Ending", function() {
         expect(docs.payload.rows[1].key).to.equal('basket');
         expect(docs.payload.rows[1].type).to.equal('string');
         expect(docs.payload.rows[1].description).to.equal('Basket type');
-
-        done();
-
     });
 
-    lab.test("params validation", function(done) {
-
-        var docs = documentation(html, '/choices/{myParam}');
+    lab.test("params validation", () => {
+        const docs = documentation(html, '/choices/{myParam}');
 
         expect(docs.query.rows.length).to.equal(0);
         expect(docs.payload.rows.length).to.equal(0);
@@ -156,10 +127,7 @@ lab.experiment("Hapi Ending", function() {
         expect(docs.params.rows[0].key).to.equal('myParam');
         expect(docs.params.rows[0].type).to.equal('string');
         expect(docs.params.rows[0].description).to.equal('Your param');
-        expect(docs.params.rows[0].valids).to.deep.equal(['dogs', 'cats']);
-
-        done();
-
+        expect(docs.params.rows[0].valid.toString()).to.equal(['dogs', 'cats'].toString());
     });
 
 });
