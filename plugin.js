@@ -36,7 +36,7 @@ exports.register = async function (server, options) {
     function routing(svr, options) {
 
         let assetsPath = options.assetsPath || 'assets',
-            allRoutes = routeFlattener.fetchRoutes(svr);
+            allRoutes = server.table();
 
         return {
             routes: routeFlattener.flatten(allRoutes),

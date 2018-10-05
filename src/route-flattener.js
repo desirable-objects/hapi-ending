@@ -76,14 +76,6 @@ class RouteFlattener {
 
   }
 
-  _mapExamples(items) {
-    let mapping = {};
-    for (let key of Object.keys(items)) {
-      mapping[key] = this._example(items, key);
-    }
-    return mapping;
-  }
-
   _example(items, key) {
     return (items[key].valid && items[key].valid.length > 1) ? items[key].valid[0] : items[key].example;
   }
@@ -109,6 +101,7 @@ class RouteFlattener {
       master[key] = { type };
 
       if (this._notEmpty(valids)) {
+          console.log('== VALIDS ==', valids);
         master[key].valid = valids._set;
       }
 
@@ -152,19 +145,6 @@ class RouteFlattener {
     return routing;
 
   }
-
-  fetchRoutes(server) {
-
-    let routes = [];
-
-    for (let table of server.table()) {
-      routes = routes.concat(table);
-    }
-
-    return routes;
-
-  }
-
 }
 
 module.exports = new RouteFlattener();

@@ -39,7 +39,7 @@ lab.experiment("Hapi Ending", () => {
                     key: html(this).find('td').slice(0,1).text(),
                     type: html(this).find('td').slice(1,2).text(),
                     description: html(this).find('td').slice(2,3).text(),
-                    valid: html(this).find('td').slice(3,4).find('.valid').map(function() { return html(this).text() }).get(),
+                    valids: html(this).find('td').slice(3,4).find('.valid').map(function() { return html(this).text() }).get(),
                 });
             }
         );
@@ -127,7 +127,7 @@ lab.experiment("Hapi Ending", () => {
         expect(docs.params.rows[0].key).to.equal('myParam');
         expect(docs.params.rows[0].type).to.equal('string');
         expect(docs.params.rows[0].description).to.equal('Your param');
-        expect(docs.params.rows[0].valid.toString()).to.equal(['dogs', 'cats'].toString());
+        expect(docs.params.rows[0].valids.toString()).to.equal(['dogs', 'cats'].toString());
     });
 
 });

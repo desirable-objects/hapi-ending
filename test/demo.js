@@ -1,28 +1,24 @@
 const Hapi = require("hapi");
 
 const server = Hapi.server({
-    host: 'localhost',
-    port: 3000
+  host: 'localhost',
+  port: 3000
 });
 
-const init = async () => {
-    try {
-        await server.register([{
-            plugin: require('../plugin'),
-            options: {enabled: true}
-        }]);
-    } catch (err) {
-        if (err) {
-            console.log('Failed to register the plugin:', err);
-            process.exit(1);
-        }
-    }
+server.register([{
+  plugin: require('../plugin'),
+  options: { enabled: true }
+}]).then(async () => {
 
-    server.route(require('./routes/example.js'));
+  server.route(require('./routes/example.js'));
 
-    await server.start();
+  await server.start();
 
-    console.log(`Server running at: ${server.info.uri}`);
-};
+  console.log(`Server running at: ${server.info.uri}`);
 
-init();
+}).catch(err => {
+
+    console.log('Failed to register the plugin:', err);
+    process.exit(1);
+
+});
