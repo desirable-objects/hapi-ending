@@ -1,10 +1,13 @@
 ### Hapi Ending
 
-Lists routes, parameters, and validation constraints for HAPI version 12.x.
+Lists routes, parameters, and validation constraints for HAPI version 17.x.
 
 ## Plugin status
 
 [![Build Status](https://travis-ci.org/desirable-objects/hapi-ending.svg)](https://travis-ci.org/desirable-objects/hapi-ending)
+
+* For HapiJS < v17, use branch hapi-pre-v17 or npm tag 0.9.2
+* For HapiJS > v17, use master, or npm tag > ^1.0.0
 
 ## What it looks like
 
