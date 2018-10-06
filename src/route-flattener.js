@@ -30,7 +30,7 @@ class RouteFlattener {
       query: 'Query String',
       params: 'URI Components',
       payload: 'JSON Payload'
-    }
+    };
 
     for (let validationType of Object.keys(validationTypes)) {
 
@@ -76,14 +76,6 @@ class RouteFlattener {
 
   }
 
-  _mapExamples(items) {
-    let mapping = {};
-    for (let key of Object.keys(items)) {
-      mapping[key] = this._example(items, key);
-    }
-    return mapping;
-  }
-
   _example(items, key) {
     return (items[key].valid && items[key].valid.length > 1) ? items[key].valid[0] : items[key].example;
   }
@@ -100,7 +92,6 @@ class RouteFlattener {
     if (!this._isIterable(children)) { return; }
 
     for (let param of children) {
-
       let key = `${parentKey ? parentKey+'.' : ''}${param.key}`,
           valids = param.schema._valids,
           type = param.schema._type,
@@ -109,7 +100,7 @@ class RouteFlattener {
       master[key] = { type };
 
       if (this._notEmpty(valids)) {
-        master[key].valid = valids._set;
+        master[key].valid = Array.from(valids._set);
       }
 
       if (description) {
@@ -127,7 +118,7 @@ class RouteFlattener {
   }
 
   _notEmpty(thing) {
-    return Object.keys(thing).length > 0;
+    return thing && thing._set && Array.from(thing._set).length > 0;
   }
 
   flatten(table) {
@@ -152,19 +143,6 @@ class RouteFlattener {
     return routing;
 
   }
-
-  fetchRoutes(server) {
-
-    let routes = [];
-
-    for (let table of server.table()) {
-      routes = routes.concat(table.table);
-    }
-
-    return routes;
-
-  }
-
 }
 
 module.exports = new RouteFlattener();
