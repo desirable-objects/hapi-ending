@@ -6,6 +6,10 @@ Lists routes, parameters, and validation constraints for HAPI version 12.x.
 
 [![Build Status](https://travis-ci.org/desirable-objects/hapi-ending.svg)](https://travis-ci.org/desirable-objects/hapi-ending)
 
+## Thanks
+
+Original plugin by [Antony Jones](https://github.com/antony/), updated for Hapi v17+ by [Yulia Tenincheva](https://github.com/Y-LyN-10)
+
 ## What it looks like
 
 <img src="https://raw.githubusercontent.com/desirable-objects/hapi-ending/master/screenshot.png" style="width: 90%" alt="Hapi Ending" title="Hapi Ending" />
