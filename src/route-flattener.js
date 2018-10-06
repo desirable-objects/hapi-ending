@@ -92,7 +92,6 @@ class RouteFlattener {
     if (!this._isIterable(children)) { return; }
 
     for (let param of children) {
-
       let key = `${parentKey ? parentKey+'.' : ''}${param.key}`,
           valids = param.schema._valids,
           type = param.schema._type,
@@ -101,8 +100,7 @@ class RouteFlattener {
       master[key] = { type };
 
       if (this._notEmpty(valids)) {
-          console.log('== VALIDS ==', valids);
-        master[key].valid = valids._set;
+        master[key].valid = Array.from(valids._set);
       }
 
       if (description) {
@@ -120,7 +118,7 @@ class RouteFlattener {
   }
 
   _notEmpty(thing) {
-    return Object.keys(thing).length > 0;
+    return thing && thing._set && Array.from(thing._set).length > 0;
   }
 
   flatten(table) {
