@@ -1,133 +1,131 @@
-const Lab = require("lab"),
-      Code = require('code'),
-      Hapi = require('hapi'),
-      cheerio = require('cheerio');
+const Lab = require('lab')
 
-const lab = exports.lab = Lab.script();
-const expect = Code.expect;
+const Code = require('code')
 
-lab.experiment("Hapi Ending", () => {
+const Hapi = require('hapi')
 
-    let html, server, serverResponse;
-    let defaultRoute = {
-        method: "GET",
-        url: "/"
-    };
+const cheerio = require('cheerio')
 
-    function documentation(html, endpoint) {
+const lab = exports.lab = Lab.script()
+const expect = Code.expect
 
-        const parent = html('h1[data-path="'+endpoint+'"]');
+lab.experiment('Hapi Ending', () => {
+  let html, server, serverResponse
+  let defaultRoute = {
+    method: 'GET',
+    url: '/'
+  }
 
-        return {
-            title: parent.text(),
-            tags: parent.nextUntil('h1', '.tags').find('.tag').map(function() { return html(this).text() }).get(),
-            urlMapping: parent.nextUntil('h1', '.url-mapping').text(),
-            description: parent.nextUntil('h1', '.endpoint-description').text(),
-            query: table(html, parent.nextUntil('h1', '.query-table')),
-            payload: table(html, parent.nextUntil('h1', '.payload-table')),
-            params: table(html, parent.nextUntil('h1', '.params-table'))
-        }
+  function documentation (html, endpoint) {
+    const parent = html('h1[data-path="' + endpoint + '"]')
+
+    return {
+      title: parent.text(),
+      tags: parent.nextUntil('h1', '.tags').find('.tag').map(function () { return html(this).text() }).get(),
+      urlMapping: parent.nextUntil('h1', '.url-mapping').text(),
+      description: parent.nextUntil('h1', '.endpoint-description').text(),
+      query: table(html, parent.nextUntil('h1', '.query-table')),
+      payload: table(html, parent.nextUntil('h1', '.payload-table')),
+      params: table(html, parent.nextUntil('h1', '.params-table'))
+    }
+  }
+
+  function table (html, parent) {
+    let rows = []
+
+    parent.find('tbody tr').each(
+      function (i, el) {
+        rows.push({
+          key: html(this).find('td').slice(0, 1).text(),
+          type: html(this).find('td').slice(1, 2).text(),
+          description: html(this).find('td').slice(2, 3).text(),
+          valids: html(this).find('td').slice(3, 4).find('.valid').map(function () { return html(this).text() }).get()
+        })
+      }
+    )
+
+    return {
+      rows: rows
+    }
+  }
+
+  lab.before(async () => {
+    server = new Hapi.Server({
+      host: 'localhost',
+      port: 3000
+    })
+
+    server.route(require('./routes/example'))
+
+    const serverOptions = {
+      enabled: true,
+      logoUrl: '/blah/ping.png'
     }
 
-    function table(html, parent) {
+    await server.register([{
+      plugin: require('../plugin'),
+      options: serverOptions
+    }])
 
-        let rows = [];
+    serverResponse = await server.inject(defaultRoute)
+    html = cheerio.load(serverResponse.result)
+  })
 
-        parent.find('tbody tr').each(
-            function(i, el) {
-                rows.push({
-                    key: html(this).find('td').slice(0,1).text(),
-                    type: html(this).find('td').slice(1,2).text(),
-                    description: html(this).find('td').slice(2,3).text(),
-                    valids: html(this).find('td').slice(3,4).find('.valid').map(function() { return html(this).text() }).get(),
-                });
-            }
-        );
+  lab.test('logo url is correct', () => {
+    expect(serverResponse.statusCode).to.equal(200)
+    expect(html('.tocify-wrapper img').attr('src')).to.equal('/blah/ping.png')
+  })
 
-        return {
-            rows: rows
-        }
-    }
+  lab.test('list endpoints', () => {
+    expect(serverResponse.statusCode).to.equal(200)
+    expect(html('h1').length).to.equal(4)
+  })
 
-    lab.before(async () => {
+  lab.test('query validation', () => {
+    const docs = documentation(html, '/checkout')
 
-        server = new Hapi.Server({
-            host: 'localhost',
-            port: 3000
-        });
+    expect(docs.title).to.equal('/checkout')
+    expect(docs.urlMapping).to.equal('get /checkout')
+    expect(docs.tags[0]).to.equal('one')
+    expect(docs.tags[1]).to.equal('two')
+    expect(docs.tags[2]).to.equal('three')
+    expect(docs.description).to.equal('Tests a checkout with items')
 
-        server.route(require('./routes/example'));
+    expect(docs.payload.rows.length).to.equal(0)
+    expect(docs.params.rows.length).to.equal(0)
 
-        const serverOptions = {
-            enabled: true,
-            logoUrl: '/blah/ping.png'
-        };
+    expect(docs.query.rows[0].key).to.equal('items')
+    expect(docs.query.rows[0].type).to.equal('number')
+    expect(docs.query.rows[0].description).to.equal('Number of items in the cart')
+  })
 
-        await server.register([{
-            plugin: require('../plugin'),
-            options: serverOptions
-        }]);
+  lab.test('payload validation', () => {
+    const docs = documentation(html, '/choices/enders-game')
 
-        serverResponse = await server.inject(defaultRoute);
-        html = cheerio.load(serverResponse.result);
-    });
+    expect(docs.description).to.equal("Don't put all your eggs in one basket")
 
-    lab.test("logo url is correct", () => {
-        expect(serverResponse.statusCode).to.equal(200);
-        expect(html('.tocify-wrapper img').attr('src')).to.equal('/blah/ping.png');
-    });
+    expect(docs.query.rows.length).to.equal(0)
+    expect(docs.params.rows.length).to.equal(0)
 
-    lab.test("list endpoints", () => {
-        expect(serverResponse.statusCode).to.equal(200);
-        expect(html('h1').length).to.equal(4);
-    });
+    expect(docs.payload.rows[0].key).to.equal('eggs')
+    expect(docs.payload.rows[0].type).to.equal('number')
+    expect(docs.payload.rows[0].description).to.equal('Eggs to go into the basket')
 
-    lab.test("query validation", () => {
-        const docs = documentation(html, '/checkout');
+    expect(docs.payload.rows[1].key).to.equal('basket')
+    expect(docs.payload.rows[1].type).to.equal('string')
+    expect(docs.payload.rows[1].description).to.equal('Basket type')
+  })
 
-        expect(docs.title).to.equal('/checkout');
-        expect(docs.urlMapping).to.equal('get /checkout');
-        expect(docs.tags[0]).to.equal('one');
-        expect(docs.tags[1]).to.equal('two');
-        expect(docs.tags[2]).to.equal('three');
-        expect(docs.description).to.equal('Tests a checkout with items');
+  lab.test('params validation', () => {
+    const docs = documentation(html, '/choices/{myParam}')
 
-        expect(docs.payload.rows.length).to.equal(0);
-        expect(docs.params.rows.length).to.equal(0);
+    expect(docs.query.rows.length).to.equal(0)
+    expect(docs.payload.rows.length).to.equal(0)
+    expect(docs.params.rows.length).to.equal(1)
 
-        expect(docs.query.rows[0].key).to.equal('items');
-        expect(docs.query.rows[0].type).to.equal('number');
-        expect(docs.query.rows[0].description).to.equal('Number of items in the cart');
-    });
-
-    lab.test("payload validation", () => {
-        const docs = documentation(html, '/choices/enders-game');
-
-        expect(docs.description).to.equal("Don't put all your eggs in one basket");
-
-        expect(docs.query.rows.length).to.equal(0);
-        expect(docs.params.rows.length).to.equal(0);
-
-        expect(docs.payload.rows[0].key).to.equal('eggs');
-        expect(docs.payload.rows[0].type).to.equal('number');
-        expect(docs.payload.rows[0].description).to.equal('Eggs to go into the basket');
-
-        expect(docs.payload.rows[1].key).to.equal('basket');
-        expect(docs.payload.rows[1].type).to.equal('string');
-        expect(docs.payload.rows[1].description).to.equal('Basket type');
-    });
-
-    lab.test("params validation", () => {
-        const docs = documentation(html, '/choices/{myParam}');
-
-        expect(docs.query.rows.length).to.equal(0);
-        expect(docs.payload.rows.length).to.equal(0);
-        expect(docs.params.rows.length).to.equal(1);
-
-        expect(docs.params.rows[0].key).to.equal('myParam');
-        expect(docs.params.rows[0].type).to.equal('string');
-        expect(docs.params.rows[0].description).to.equal('Your param');
-        expect(docs.params.rows[0].valids.toString()).to.equal(['dogs', 'cats'].toString());
-    });
-
-});
+    expect(docs.params.rows[0].key).to.equal('myParam')
+    expect(docs.params.rows[0].type).to.equal('string')
+    expect(docs.params.rows[0].description).to.equal('Your param')
+    expect(docs.params.rows[0].valids.toString()).to.equal(['dogs', 'cats'].toString())
+  })
+})

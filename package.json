@@ -45,6 +45,7 @@
   "devDependencies": {
     "cheerio": "^0.22.0",
     "jshint": "^2.9.6",
-    "lab": "^16.1.0"
+    "lab": "^16.1.0",
+    "standard": "^12.0.1"
   }
 }
