@@ -274,4 +274,3 @@ describe('Route Flattener', () => {
     )
   })
 })
-

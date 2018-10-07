@@ -59,7 +59,7 @@ You can add a description to routes using the parameters 'description', 'tags', 
             validate: {
                 query: {
                     a: Joi.number().describe('This is where you put the number of As'),
-                    now: Joi.boolean().describe('Whether I should do it now or later');
+                    now: Joi.boolean().describe('Whether I should do it now or later')
                 },
                 params: {
                     foo: Joi.number().describe('It should more than likely be a number'),
@@ -67,13 +67,13 @@ You can add a description to routes using the parameters 'description', 'tags', 
                 }
             },
             notes: [
-                'This is just a note',
+                'This is just a note'
             ]
         },
         handler: function(request, h) {
             ...
         }
-    };
+    }
 ```
 
 ### Private endpoints

@@ -85,11 +85,8 @@ class RouteFlattener {
 
     for (let param of children) {
       let key = `${parentKey ? parentKey + '.' : ''}${param.key}`
-
       let valids = param.schema._valids
-
       let type = param.schema._type
-
       let description = param.schema._description
 
       master[key] = { type }
