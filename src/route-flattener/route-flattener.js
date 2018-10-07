@@ -1,34 +1,16 @@
 'use strict'
 
 const dot = require('dot-object')
-const { transform } = require('reorient')
-const examples = require('../payload-example')
-
-function transformRouteSettings (settings) {
-  const schema = {
-    tags: 'tags',
-    description: 'description',
-    notes: 'notes'
-  }
-
-  const endpoint = transform(settings, schema)
-  return Object.assign({ validation: {} }, endpoint)
-}
+const routeSettingsParser = require('../route-settings-parser')
+const attributeParser = require('../attribute-parser')
 
 function getExample (items, key) {
   return (items[key].valid && items[key].valid.length > 1) ? items[key].valid[0] : items[key].example
 }
 
-function isIterable (obj) {
-  if (obj == null) {
-    return false
-  }
-  return obj[Symbol.iterator] !== undefined
-}
-
 class RouteFlattener {
   flattenEntry (entry) {
-    const endpoint = transformRouteSettings(entry.settings)
+    const endpoint = routeSettingsParser.parse(entry.settings)
 
     const validationTypes = {
       query: 'Query String',
@@ -43,9 +25,13 @@ class RouteFlattener {
           elements: {}
         }
 
-        this.recursivelyAbsorb(entry.settings.validate[validationType]._inner.children, null, endpoint.validation[validationType].elements)
+        attributeParser.parse(
+          entry.settings.validate[validationType]._inner.children,
+          null,
+          endpoint.validation[validationType].elements
+        )
 
-        let items = endpoint.validation[validationType].elements
+        const items = endpoint.validation[validationType].elements
 
         let example
 
@@ -75,36 +61,6 @@ class RouteFlattener {
     }
 
     return endpoint
-  }
-
-  recursivelyAbsorb (children, parentKey, master) {
-    if (!isIterable(children)) { return }
-
-    for (let param of children) {
-      const key = `${parentKey ? parentKey + '.' : ''}${param.key}`
-
-      function extractValidParams (data) {
-        const valids = data._valids
-        const isSet = valids && valids._set
-        const items = isSet ? Array.from(valids._set) : []
-        return items.length > 0 ? items : undefined
-      }
-
-      const schema = {
-        type: '_type',
-        valid: extractValidParams,
-        description: '_description'
-      }
-
-      master[key] = transform(param.schema, schema)
-
-      if (param.schema._type === 'object') {
-        this.recursivelyAbsorb(param.schema._inner.children, key, master)
-      } else {
-        const { type } = master[key]
-        master[key].example = examples[type] || `<${type}>`
-      }
-    }
   }
 
   flatten (table) {
