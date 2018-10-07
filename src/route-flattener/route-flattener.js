@@ -4,14 +4,31 @@ const dot = require('dot-object')
 const { transform } = require('reorient')
 const examples = require('../payload-example')
 
+function transformRouteSettings (settings) {
+  const schema = {
+    tags: 'tags',
+    description: 'description',
+    notes: 'notes'
+  }
+
+  const endpoint = transform(settings, schema)
+  return Object.assign({ validation: {} }, endpoint)
+}
+
+function getExample (items, key) {
+  return (items[key].valid && items[key].valid.length > 1) ? items[key].valid[0] : items[key].example
+}
+
+function isIterable (obj) {
+  if (obj == null) {
+    return false
+  }
+  return obj[Symbol.iterator] !== undefined
+}
+
 class RouteFlattener {
   flattenEntry (entry) {
-    const endpoint = {
-      tags: entry.settings.tags,
-      description: entry.settings.description,
-      notes: entry.settings.notes,
-      validation: {}
-    }
+    const endpoint = transformRouteSettings(entry.settings)
 
     const validationTypes = {
       query: 'Query String',
@@ -35,20 +52,20 @@ class RouteFlattener {
         switch (validationType) {
           case 'query':
             example = Object.keys(items).map((key) => {
-              return `${key}=${this._example(items, key)}`
+              return `${key}=${getExample(items, key)}`
             }).join('&')
             break
           case 'payload':
             let mapping = {}
             for (let key of Object.keys(items)) {
-              mapping[key] = this._example(items, key)
+              mapping[key] = getExample(items, key)
             }
             example = dot.object(mapping)
             break
           case 'params':
             example = entry.path
             for (let key of Object.keys(items)) {
-              example = example.replace('{' + key + '}', this._example(items, key))
+              example = example.replace('{' + key + '}', getExample(items, key))
             }
             break
         }
@@ -60,19 +77,8 @@ class RouteFlattener {
     return endpoint
   }
 
-  _example (items, key) {
-    return (items[key].valid && items[key].valid.length > 1) ? items[key].valid[0] : items[key].example
-  }
-
-  _isIterable (obj) {
-    if (obj == null) {
-      return false
-    }
-    return obj[Symbol.iterator] !== undefined
-  }
-
   recursivelyAbsorb (children, parentKey, master) {
-    if (!this._isIterable(children)) { return }
+    if (!isIterable(children)) { return }
 
     for (let param of children) {
       const key = `${parentKey ? parentKey + '.' : ''}${param.key}`
