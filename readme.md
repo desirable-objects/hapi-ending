@@ -2,11 +2,7 @@
 
 Lists routes, parameters, and validation constraints for HAPI version 17.x.
 
-[![CircleCI](https://circleci.com/gh/desirable-objects/hapi-ending.svg?style=svg)](https://circleci.com/gh/desirable-objects/hapi-ending) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-
-## Plugin status
-
-[![Build Status](https://travis-ci.org/desirable-objects/hapi-ending.svg)](https://travis-ci.org/desirable-objects/hapi-ending)
+[![CircleCI](https://circleci.com/gh/desirable-objects/hapi-ending.svg?style=shield)](https://circleci.com/gh/desirable-objects/hapi-ending) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Thanks
 
