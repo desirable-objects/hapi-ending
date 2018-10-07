@@ -8,6 +8,26 @@ function getExample (items, key) {
   return (items[key].valid && items[key].valid.length > 1) ? items[key].valid[0] : items[key].example
 }
 
+const exampleFormats = {
+  query: function (items) {
+    return Object.keys(items).map((key) => {
+      return `${key}=${getExample(items, key)}`
+    }).join('&')
+  },
+  payload: function (items) {
+    const mapping = Object.keys(items).reduce((acc, key) => {
+      acc[key] = getExample(items, key)
+      return acc
+    }, {})
+    return dot.object(mapping)
+  },
+  params: function (items, entry) {
+    return Object.keys(items).reduce((acc, key) => {
+      return acc.replace('{' + key + '}', getExample(items, key))
+    }, entry.path)
+  }
+}
+
 class RouteFlattener {
   flattenEntry (entry) {
     const endpoint = routeSettingsParser.parse(entry.settings)
@@ -20,7 +40,8 @@ class RouteFlattener {
 
     for (let validationType of Object.keys(validationTypes)) {
       if (entry.settings.validate[validationType]) {
-        endpoint.validation[validationType] = {
+
+        const validation = {
           humanName: validationTypes[validationType],
           elements: {}
         }
@@ -28,35 +49,12 @@ class RouteFlattener {
         attributeParser.parse(
           entry.settings.validate[validationType]._inner.children,
           null,
-          endpoint.validation[validationType].elements
+          validation.elements
         )
 
-        const items = endpoint.validation[validationType].elements
+        validation.example = exampleFormats[validationType](validation.elements, entry)
 
-        let example
-
-        switch (validationType) {
-          case 'query':
-            example = Object.keys(items).map((key) => {
-              return `${key}=${getExample(items, key)}`
-            }).join('&')
-            break
-          case 'payload':
-            let mapping = {}
-            for (let key of Object.keys(items)) {
-              mapping[key] = getExample(items, key)
-            }
-            example = dot.object(mapping)
-            break
-          case 'params':
-            example = entry.path
-            for (let key of Object.keys(items)) {
-              example = example.replace('{' + key + '}', getExample(items, key))
-            }
-            break
-        }
-
-        endpoint.validation[validationType].example = example
+        endpoint.validation[validationType] = validation
       }
     }
 
