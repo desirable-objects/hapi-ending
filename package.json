@@ -15,6 +15,7 @@
   "main": "plugin.js",
   "scripts": {
     "test": "./node_modules/lab/bin/lab -l",
+    "lint": "standard",
     "coverage": "./node_modules/lab/bin/lab -lr lcov",
     "demo": "node test/demo.js"
   },
