@@ -14,7 +14,7 @@
   ],
   "main": "plugin.js",
   "scripts": {
-    "test": "./node_modules/lab/bin/lab -l",
+    "test": "PORT=8145 mocha {lib,test}/**/*.spec.js",
     "lint": "standard",
     "coverage": "./node_modules/lab/bin/lab -lr lcov",
     "demo": "node test/demo.js"
@@ -46,7 +46,7 @@
   "devDependencies": {
     "cheerio": "^0.22.0",
     "jshint": "^2.9.6",
-    "lab": "^16.1.0",
+    "mocha": "^5.2.0",
     "standard": "^12.0.1"
   }
 }

@@ -1,14 +1,7 @@
 'use strict'
 
-const Lab = require('lab')
-
-const Code = require('code')
-
-const lab = exports.lab = Lab.script()
-
-const expect = Code.expect
-
-let flattener = require('../src/route-flattener')
+const { expect } = require('code')
+const flattener = require('.')
 
 function buildPrivateRoute () {
   return {
@@ -19,7 +12,7 @@ function buildPrivateRoute () {
 }
 
 function buildRoute (method, validationType, description) {
-  let validate = {}
+  const validate = {}
   validate[validationType] = {
     _inner: {
       children: [
@@ -49,11 +42,11 @@ function buildRoute (method, validationType, description) {
   }
 }
 
-lab.experiment('Route Flattener', () => {
-  lab.test('Flattens a single route', () => {
-    let singleRouteWithQuery = buildRoute('get', 'query', 'Thing the stuff')
+describe('Route Flattener', () => {
+  it('Flattens a single route', () => {
+    const singleRouteWithQuery = buildRoute('get', 'query', 'Thing the stuff')
 
-    let output = {
+    const output = {
       tags: ['one', 'two'],
       description: 'One Two',
       notes: ['Counts Numbers'],
@@ -70,14 +63,14 @@ lab.experiment('Route Flattener', () => {
       }
     }
 
-    let flat = flattener.flattenEntry(singleRouteWithQuery)
+    const flat = flattener.flattenEntry(singleRouteWithQuery)
     expect(flat.toString().includes(output.toString())).to.be.true()
   })
 
-  lab.test('Provides query example', () => {
-    let singleRouteWithQuery = buildRoute('get', 'query')
+  context('with query', () => {
+    const singleRouteWithQuery = buildRoute('get', 'query')
 
-    let output = {
+    const output = {
       tags: ['one', 'two'],
       description: 'One Two',
       notes: ['Counts Numbers'],
@@ -94,17 +87,33 @@ lab.experiment('Route Flattener', () => {
       }
     }
 
-    let flat = flattener.flattenEntry(singleRouteWithQuery)
-    expect(flat.validation).not.to.be.undefined()
-    expect(flat.validation.query).not.to.be.undefined()
-    expect(flat.validation.query.example).not.to.be.undefined()
-    expect(flat.validation.query.example.toString().includes(output.validation.query.example.toString())).to.be.true()
+    const flat = flattener.flattenEntry(singleRouteWithQuery)
+
+    it('has validation', () => {
+      expect(flat.validation).not.to.be.undefined()
+    })
+
+    it('has validation query', () => {
+      expect(flat.validation.query).not.to.be.undefined()
+    })
+
+    it('has validation query example', () => {
+      expect(flat.validation.query.example).not.to.be.undefined()
+    })
+
+    it('includes the validation query example in its output', () => {
+      expect(
+        flat.validation.query.example.toString()
+      ).to.include(
+        output.validation.query.example.toString()
+      )
+    })
   })
 
-  lab.test('Provides payload example', () => {
-    let singleRouteWithQuery = buildRoute('get', 'payload')
+  context('Provides payload example', () => {
+    const singleRouteWithQuery = buildRoute('get', 'payload')
 
-    let output = {
+    const output = {
       tags: ['one', 'two'],
       description: 'One Two',
       notes: ['Counts Numbers'],
@@ -121,37 +130,60 @@ lab.experiment('Route Flattener', () => {
       }
     }
 
-    let flat = flattener.flattenEntry(singleRouteWithQuery)
-    expect(flat.validation).not.to.be.undefined()
-    expect(flat.validation.payload).not.to.be.undefined()
-    expect(flat.validation.payload.example).not.to.be.undefined()
-    expect(flat.validation.payload.example.toString().includes(output.validation.payload.example.toString())).to.be.true()
+    const flat = flattener.flattenEntry(singleRouteWithQuery)
+
+    it('has validation', () => {
+      expect(flat.validation).not.to.be.undefined()
+    })
+
+    it('has validation payload', () => {
+      expect(flat.validation.payload).not.to.be.undefined()
+    })
+
+    it('has validation payload example', () => {
+      expect(flat.validation.payload.example).not.to.be.undefined()
+    })
+
+    it('includes the validation payload example in its output', () => {
+      expect(
+        flat.validation.payload.example.toString()
+      ).to.include(
+        output.validation.payload.example.toString()
+      )
+    })
   })
 
-  lab.test('Groups by endpoint', () => {
-    let tables = [
+  context('Grouping', () => {
+    const tables = [
       { public: buildRoute('get', 'query') },
       { public: buildRoute('post', 'query') },
       { public: buildRoute('put', 'query') }
     ]
 
-    let flat = flattener.flatten(tables)
-    expect(Object.keys(flat).length).to.equal(1)
-    expect(Object.keys(flat['/counter']).length).to.equal(3)
+    const flat = flattener.flatten(tables)
+
+    it('has flattened object', () => {
+      expect(Object.keys(flat)).to.have.length(1)
+    })
+
+    it('has three grouped methods', () => {
+      expect(Object.keys(flat['/counter'])).to.have.length(3)
+    })
   })
 
-  lab.test('Ignores private routes', () => {
-    let table = [
+  it('Ignores private routes', () => {
+    const table = [
       { public: buildRoute('get', 'query') },
       { public: buildPrivateRoute() }
     ]
 
-    let routes = flattener.flatten(table)
-    expect(Object.keys(routes).length).to.equal(1)
+    const routes = flattener.flatten(table)
+
+    expect(Object.keys(routes)).to.have.length(1)
   })
 
-  lab.test('Flattens nested validators', () => {
-    let depth = {
+  it('Flattens nested validators', () => {
+    const depth = {
       path: '/nester',
       method: 'put',
       settings: {
@@ -209,7 +241,7 @@ lab.experiment('Route Flattener', () => {
       }
     }
 
-    let output = {
+    const output = {
       tags: ['one', 'two'],
       description: 'One Two',
       notes: ['Counts Numbers'],
@@ -233,7 +265,12 @@ lab.experiment('Route Flattener', () => {
       }
     }
 
-    let flat = flattener.flattenEntry(depth)
-    expect(flat.toString().includes(output.toString())).to.be.true()
+    const flat = flattener.flattenEntry(depth)
+
+    expect(
+      flat.toString()
+    .to.include(
+      output.toString()
+    )
   })
 })
