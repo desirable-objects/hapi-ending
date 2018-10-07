@@ -1,28 +1,19 @@
 'use strict'
 
-let dot = require('dot-object')
+const dot = require('dot-object')
+const { transform } = require('reorient')
+const examples = require('../payload-example')
 
 class RouteFlattener {
-  constructor () {
-    this.examples = {
-      string: 'qux',
-      number: 123,
-      array: ['foo', 'bar', 'baz'],
-      object: { foo: 'bar' },
-      boolean: true,
-      date: new Date().toISOString()
-    }
-  }
-
   flattenEntry (entry) {
-    let endpoint = {
+    const endpoint = {
       tags: entry.settings.tags,
       description: entry.settings.description,
       notes: entry.settings.notes,
       validation: {}
     }
 
-    let validationTypes = {
+    const validationTypes = {
       query: 'Query String',
       params: 'URI Components',
       payload: 'JSON Payload'
@@ -84,31 +75,30 @@ class RouteFlattener {
     if (!this._isIterable(children)) { return }
 
     for (let param of children) {
-      let key = `${parentKey ? parentKey + '.' : ''}${param.key}`
-      let valids = param.schema._valids
-      let type = param.schema._type
-      let description = param.schema._description
+      const key = `${parentKey ? parentKey + '.' : ''}${param.key}`
 
-      master[key] = { type }
-
-      if (this._notEmpty(valids)) {
-        master[key].valid = Array.from(valids._set)
+      function extractValidParams (data) {
+        const valids = data._valids
+        const isSet = valids && valids._set
+        const items = isSet ? Array.from(valids._set) : []
+        return items.length > 0 ? items : undefined
       }
 
-      if (description) {
-        master[key].description = description
+      const schema = {
+        type: '_type',
+        valid: extractValidParams,
+        description: '_description'
       }
+
+      master[key] = transform(param.schema, schema)
 
       if (param.schema._type === 'object') {
         this.recursivelyAbsorb(param.schema._inner.children, key, master)
       } else {
-        master[key].example = this.examples[type] || `<${type}>`
+        const { type } = master[key]
+        master[key].example = examples[type] || `<${type}>`
       }
     }
-  }
-
-  _notEmpty (thing) {
-    return thing && thing._set && Array.from(thing._set).length > 0
   }
 
   flatten (table) {
