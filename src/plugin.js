@@ -5,7 +5,7 @@ const Inert = require('inert')
 const Vision = require('vision')
 const handlebars = require('handlebars')
 const pkg = require('../package.json')
-const routeFlattener = require('./route-flattener')
+const { flatten } = require('./route-flattener')
 
 exports.register = async function (server, options) {
   if (!options.enabled) {
@@ -41,7 +41,7 @@ exports.register = async function (server, options) {
     let allRoutes = server.table()
 
     return {
-      routes: routeFlattener.flatten(allRoutes),
+      routes: flatten(allRoutes),
       baseUrl: options.baseUrl,
       assetsPath,
       logoUrl: options.logoUrl || `/${assetsPath}/img/hapi-logo.svg`,
