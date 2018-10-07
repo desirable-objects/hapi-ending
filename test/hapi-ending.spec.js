@@ -83,7 +83,7 @@ describe('Hapi Ending', () => {
 
   context('/checkout endpoint', () => {
     let docs
-    
+
     beforeEach(() => {
       docs = documentation(html, '/checkout')
     })

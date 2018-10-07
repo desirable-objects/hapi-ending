@@ -269,8 +269,9 @@ describe('Route Flattener', () => {
 
     expect(
       flat.toString()
-    .to.include(
+    ).to.include(
       output.toString()
     )
   })
 })
+

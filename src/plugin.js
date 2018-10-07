@@ -8,7 +8,6 @@ const pkg = require('../package.json')
 const routeFlattener = require('./route-flattener')
 
 exports.register = async function (server, options) {
-
   if (!options.enabled) {
     return
   }
@@ -67,7 +66,7 @@ exports.register = async function (server, options) {
     },
     handler: {
       directory: {
-        path: './src/public',
+        path: './public',
         listing: true
       }
     }
