@@ -3,6 +3,7 @@
 const routeSettingsParser = require('../route-settings-parser')
 const attributeParser = require('../attribute-parser')
 const exampleFormatter = require('../example-formatter')
+const { reach } = require('hoek')
 
 function flattenEntry (entry) {
   const endpoint = routeSettingsParser.parse(entry.settings)
@@ -36,22 +37,23 @@ function flattenEntry (entry) {
 }
 
 function flatten (table) {
-  let routing = {}
-
-  for (let endpoint of table) {
-    let plc = endpoint.public
-    if (!plc.settings.tags || plc.settings.tags.indexOf('private') === -1) {
-      routing[plc.path] = routing[plc.path] || {}
-      try {
-        routing[plc.path][plc.method] = flattenEntry(plc)
-      } catch (e) {
-        console.error(e, e.stack)
-      }
-      routing[plc.path][plc.method].validation.params = routing[plc.path][plc.method].validation.params || { example: plc.path }
+  return table.reduce((routing, { public: plc }) => {
+    const { settings, path, method } = plc
+    
+    const hidden = reach(settings, 'tags', { default: [] }).includes('private')
+    if (hidden) {
+      return routing
     }
-  }
 
-  return routing
+    routing[path] = routing[path] || {}
+    routing[path][method] = flattenEntry(plc)
+    
+    const pathValidation = reach(routing[path][method], 'validation.params')
+    if (!pathValidation) {
+      routing[path][method].validation.params = { example: path }
+    }
+    return routing
+  }, {})
 }
 
 exports.flatten = flatten
