@@ -5,7 +5,6 @@ function handler (request, h) {
 }
 
 module.exports = [
-
   {
     method: 'GET',
     path: '/checkout',

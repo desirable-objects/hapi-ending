@@ -16,7 +16,6 @@
   "scripts": {
     "test": "PORT=8145 mocha {lib,test}/**/*.spec.js",
     "lint": "standard",
-    "coverage": "./node_modules/lab/bin/lab -lr lcov",
     "demo": "node test/demo.js"
   },
   "repository": {
@@ -52,7 +51,7 @@
   },
   "standard": {
     "ignore": [
-      "src/public/**"
+      "lib/public/**"
     ],
     "globals": [
       "it",

@@ -4,7 +4,7 @@ const { expect } = require('code')
 const Hapi = require('hapi')
 const cheerio = require('cheerio')
 
-describe('Hapi Ending', () => {
+describe('hapi-ending', () => {
   let html
   let server
   let serverResponse
@@ -61,7 +61,7 @@ describe('Hapi Ending', () => {
     }
 
     await server.register([{
-      plugin: require('../src/plugin'),
+      plugin: require('../lib/plugin'),
       options: serverOptions
     }])
 
