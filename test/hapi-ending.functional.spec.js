@@ -4,7 +4,7 @@ const { expect } = require('code')
 const Hapi = require('hapi')
 const cheerio = require('cheerio')
 
-describe('hapi-ending', () => {
+describe('hapi-ending.functional', () => {
   let html
   let server
   let serverResponse
