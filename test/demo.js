@@ -4,12 +4,12 @@ const Hapi = require('hapi')
 
 const server = Hapi.server({
   host: 'localhost',
-  port: 3000
+  port: process.env.PORT || 3000
 })
 
 server.register([{
   plugin: require('../plugin'),
-  options: { enabled: true }
+  options: { enabled: true, baseUrl: 'https://example.net', name: 'Hapi Ending Demo' }
 }]).then(async () => {
   server.route(require('./routes/example.js'))
 
