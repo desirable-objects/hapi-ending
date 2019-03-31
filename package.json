@@ -32,7 +32,7 @@
     "code": "^5.2.0",
     "coveralls": "^3.0.2",
     "dot-object": "^1.4.1",
-    "handlebars": "4.0.5",
+    "handlebars": "^4.1.1",
     "hapi": "^17.6.0",
     "hoek": "^5.0.4",
     "inert": "^5.1.0",
