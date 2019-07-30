@@ -58,12 +58,12 @@ You can add a description to routes using the parameters 'description', 'tags', 
             tags: ['foo', 'authenticated', 'any tag']
             validate: {
                 query: {
-                    a: Joi.number().describe('This is where you put the number of As'),
-                    now: Joi.boolean().describe('Whether I should do it now or later')
+                    a: Joi.number().description('This is where you put the number of As'),
+                    now: Joi.boolean().description('Whether I should do it now or later')
                 },
                 params: {
-                    foo: Joi.number().describe('It should more than likely be a number'),
-                    baz: Joi.string().describe('Some string thing goes here')
+                    foo: Joi.number().description('It should more than likely be a number'),
+                    baz: Joi.string().description('Some string thing goes here')
                 }
             },
             notes: [
